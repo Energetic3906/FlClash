@@ -70,23 +70,26 @@ class Vpn {
     });
   }
 
-  onStarted(int fd) {
+  onStarted(int fd) async {
     if (receiver != null) {
       receiver!.close();
       receiver == null;
     }
     receiver = ReceivePort();
-    receiver!.listen((message) {
-      _handleServiceMessage(message);
-    });
-    clashLib?.startTun(fd, receiver!.sendPort.nativePort);
+    receiver!.listen(_handleServiceMessage);
+    await clashLib?.startTun(
+      StartTunParams(
+        fd: fd,
+        port: receiver!.sendPort.nativePort,
+      ),
+    );
   }
 
   setServiceMessageHandler(ServiceMessageListener serviceMessageListener) {
     _serviceMessageHandler = serviceMessageListener;
   }
 
-  _handleServiceMessage(String message) {
+  _handleServiceMessage(dynamic message) {
     final m = ServiceMessage.fromJson(json.decode(message));
     switch (m.type) {
       case ServiceMessageType.protect:

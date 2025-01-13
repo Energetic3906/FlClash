@@ -11,7 +11,7 @@ extension CompleterExt<T> on Completer<T> {
     required String functionName,
   }) {
     final realTimeout = timeout ?? const Duration(minutes: 1);
-    Timer(realTimeout + moreDuration, () {
+    Timer(realTimeout + commonDuration, () {
       if (onLast != null) {
         onLast();
       }

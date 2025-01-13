@@ -16,7 +16,6 @@ import 'models/models.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  clashLib?.initMessage();
   globalState.packageInfo = await PackageInfo.fromPlatform();
   final version = await system.version;
   final config = await preferences.getConfig() ?? Config();

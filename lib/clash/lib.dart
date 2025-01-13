@@ -6,25 +6,21 @@ import 'dart:isolate';
 
 import 'package:ffi/ffi.dart';
 import 'package:fl_clash/common/constant.dart';
+import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
+import 'package:fl_clash/state.dart';
 
 import 'generated/clash_ffi.dart';
 import 'interface.dart';
 
-class ClashLib with ClashInterface {
+class ClashLib extends ClashHandlerInterface {
   static ClashLib? _instance;
-  final receiver = ReceivePort();
-
-  late final ClashFFI clashFFI;
-
-  late final DynamicLibrary lib;
+  Isolate? _isolate;
+  final receiverPort = ReceivePort();
+  Completer<SendPort> sendPortCompleter = Completer();
 
   ClashLib._internal() {
-    lib = DynamicLibrary.open("libclash.so");
-    clashFFI = ClashFFI(lib);
-    clashFFI.initNativeApiBridge(
-      NativeApi.initializeApiDLData,
-    );
+    _initClashLibHandler();
   }
 
   factory ClashLib() {
@@ -32,9 +28,330 @@ class ClashLib with ClashInterface {
     return _instance!;
   }
 
-  initMessage() {
+  _isolateEnter(SendPort sendPort) {
+    final clashLibHandler = ClashLibHandler();
+    final innerReceiverPort = ReceivePort();
+    Action? handleActionOnIsolate({
+      required ClashLibHandler handler,
+      required Action action,
+    })  {
+      switch (action.method) {
+        case ActionMethod.message:
+          return action.copyWith(
+            data: true,
+          );
+        default:
+          return action.copyWith(
+            data: true,
+          );
+        // case ActionMethod.initClash:
+        //   return action.copyWith(
+        //     data: handler.init(
+        //       action.data as String,
+        //     ),
+        //   );
+        // case ActionMethod.getIsInit:
+        //   return action.copyWith(
+        //     data: handler.isInit,
+        //   );
+        // case ActionMethod.forceGc:
+        //   handler.forceGc();
+        //   return action.copyWith(
+        //     data: true,
+        //   );
+        // case ActionMethod.shutdown:
+        //   await handler.shutdown();
+        //   return action.copyWith(
+        //     data: true,
+        //   );
+        // case ActionMethod.validateConfig:
+        //   final message = await handler.validateConfig(action.data as String);
+        //   return action.copyWith(
+        //     data: message,
+        //   );
+        // case ActionMethod.updateConfig:
+        //   return action.copyWith(
+        //     data: await handler.updateConfig(action.data as UpdateConfigParams),
+        //   );
+        // case ActionMethod.getProxies:
+        //   return action.copyWith(
+        //     data: handler.getProxies(),
+        //   );
+        // case ActionMethod.changeProxy:
+        //   return action.copyWith(
+        //     data: await handler.changeProxy(action.data as ChangeProxyParams),
+        //   );
+        // case ActionMethod.getTraffic:
+        //   return action.copyWith(
+        //     data: handler.getTraffic(action.data as bool),
+        //   );
+        // case ActionMethod.getTotalTraffic:
+        //   return action.copyWith(
+        //     data: handler.getTotalTraffic(action.data as bool),
+        //   );
+        // case ActionMethod.resetTraffic:
+        //   handler.resetTraffic();
+        //   return action.copyWith(
+        //     data: true,
+        //   );
+        // case ActionMethod.asyncTestDelay:
+        //   return action.copyWith(
+        //     data: await handler.asyncTestDelay(action.data as String),
+        //   );
+        // case ActionMethod.getConnections:
+        //   return action.copyWith(
+        //     data: handler.getConnections(),
+        //   );
+        // case ActionMethod.closeConnections:
+        //   return action.copyWith(
+        //     data: await handler.closeConnections(),
+        //   );
+        // case ActionMethod.closeConnection:
+        //   return action.copyWith(
+        //     data: await handler.closeConnection(action.data as String),
+        //   );
+        // case ActionMethod.getExternalProviders:
+        //   return action.copyWith(
+        //     data: await handler.closeConnection(action.data as String),
+        //   );
+        // case ActionMethod.getExternalProvider:
+        //   return action.copyWith(
+        //     data: handler.getExternalProvider(action.data as String),
+        //   );
+        // case ActionMethod.updateGeoData:
+        //   return action.copyWith(
+        //     data: await handler.updateGeoData(action.data as UpdateGeoDataParams),
+        //   );
+        // case ActionMethod.updateExternalProvider:
+        //   return action.copyWith(
+        //     data: await handler.updateExternalProvider(action.data as String),
+        //   );
+        // case ActionMethod.sideLoadExternalProvider:
+        //   return action.copyWith(
+        //     data: await handler.updateExternalProvider(action.data as String),
+        //   );
+        // case ActionMethod.startLog:
+        //   handler.startLog();
+        //   return action.copyWith(
+        //     data: true,
+        //   );
+        // case ActionMethod.stopLog:
+        //   handler.startLog();
+        //   return action.copyWith(
+        //     data: true,
+        //   );
+        // case ActionMethod.startListener:
+        //   return action.copyWith(
+        //     data: await handler.startListener(),
+        //   );
+        // case ActionMethod.stopListener:
+        //   return action.copyWith(
+        //     data: await handler.stopListener(),
+        //   );
+        // case ActionMethod.getCountryCode:
+        //   return action.copyWith(
+        //     data: await handler.getCountryCode(action.data as String),
+        //   );
+        // case ActionMethod.getMemory:
+        //   return action.copyWith(
+        //     data: await handler.getMemory(),
+        //   );
+        // case ActionMethod.setFdMap:
+        //   await handler.setFdMap(action.data as int);
+        //   return action.copyWith(
+        //     data: true,
+        //   );
+        // case ActionMethod.setProcessMap:
+        //   await handler.setProcessMap(action.data as ProcessMapItem);
+        //   return action.copyWith(
+        //     data: true,
+        //   );
+        // case ActionMethod.setState:
+        //   await handler.setState(action.data as CoreState);
+        //   return action.copyWith(
+        //     data: true,
+        //   );
+        // case ActionMethod.getCurrentProfileName:
+        //   return action.copyWith(
+        //     data: handler.getCurrentProfileName(),
+        //   );
+        // case ActionMethod.startTun:
+        //   return action.copyWith(
+        //     data: handler.startTun(action.data as StartTunParams),
+        //   );
+        // case ActionMethod.stopTun:
+        //   handler.stopTun();
+        //   return action.copyWith(
+        //     data: true,
+        //   );
+        // case ActionMethod.getRunTime:
+        //   return action.copyWith(
+        //     data: handler.getRunTime(),
+        //   );
+        // case ActionMethod.updateDns:
+        //   return action.copyWith(
+        //     data: handler.updateDns(action.data as String),
+        //   );
+        // case ActionMethod.getAndroidVpnOptions:
+        //   return action.copyWith(
+        //     data: handler.getAndroidVpnOptions(),
+        //   );
+      }
+    }
+
+    innerReceiverPort.listen((message) async {
+      // final action = Action.fromJson(json.decode(message));
+      // final nextAction =  handleActionOnIsolate(
+      //   handler: clashLibHandler,
+      //   action: action,
+      // );
+      // if (nextAction == null) {
+      //   return;
+      // }
+      // sendPort.send(nextAction.toJson);
+    });
+    if (!globalState.isVpnService) {
+      final messageReceiverPort = ReceivePort();
+      clashLibHandler.initMessage(messageReceiverPort);
+      messageReceiverPort.listen((message) {
+        sendPort.send(
+          Action(
+            method: ActionMethod.message,
+            data: message,
+            id: "",
+          ),
+        );
+      });
+    }
+    sendPort.send(innerReceiverPort.sendPort);
+  }
+
+  _initSendPort(SendPort sendPort) async {
+    sendPortCompleter = Completer();
+    sendPortCompleter.complete(sendPort);
+  }
+
+  _initClashLibHandler() async {
+    receiverPort.listen((message) {
+      if (message is SendPort) {
+        _initSendPort(message);
+      } else {
+        handleAction(
+          Action.fromJson(
+            json.decode(message.trim()),
+          ),
+        );
+      }
+    });
+    _isolate = await Isolate.spawn(_isolateEnter, receiverPort.sendPort);
+  }
+
+  @override
+  destroy() {
+    _isolate?.kill();
+  }
+
+  @override
+  reStart() {
+    _isolate?.kill();
+    _initClashLibHandler();
+  }
+
+  @override
+  FutureOr<void> shutdown() {
+    super.shutdown();
+    destroy();
+  }
+
+  @override
+  sendMessage(String message) async {
+    final sendPort = await sendPortCompleter.future;
+    sendPort.send(message);
+  }
+
+  Future<bool> setFdMap(int fd) {
+    return invoke<bool>(
+      method: ActionMethod.setFdMap,
+      data: fd,
+    );
+  }
+
+  Future<bool> setProcessMap(ProcessMapItem item) {
+    return invoke<bool>(
+      method: ActionMethod.setProcessMap,
+      data: item,
+    );
+  }
+
+  Future<bool> setState(CoreState state) {
+    return invoke<bool>(
+      method: ActionMethod.setState,
+      data: state,
+    );
+  }
+
+  Future<String> getCurrentProfileName() {
+    return invoke<String>(
+      method: ActionMethod.getCurrentProfileName,
+    );
+  }
+
+  Future<bool> startTun(StartTunParams params) {
+    return invoke<bool>(
+      method: ActionMethod.startTun,
+      data: params,
+    );
+  }
+
+  Future<bool> stopTun() {
+    return invoke<bool>(
+      method: ActionMethod.stopTun,
+    );
+  }
+
+  Future<AndroidVpnOptions> getAndroidVpnOptions() {
+    return invoke<AndroidVpnOptions>(
+      method: ActionMethod.getAndroidVpnOptions,
+    );
+  }
+
+  Future<bool> updateDns(String dns) {
+    return invoke<bool>(
+      method: ActionMethod.updateDns,
+      data: dns,
+    );
+  }
+
+  Future<DateTime?> getRunTime() {
+    return invoke<DateTime?>(
+      method: ActionMethod.getRunTime,
+    );
+  }
+}
+
+class ClashLibHandler with ClashInterface {
+  static ClashLibHandler? _instance;
+
+  late final ClashFFI clashFFI;
+
+  late final DynamicLibrary lib;
+
+  ClashLibHandler._internal() {
+    lib = DynamicLibrary.open("libclash.so");
+    clashFFI = ClashFFI(lib);
+    clashFFI.initNativeApiBridge(
+      NativeApi.initializeApiDLData,
+    );
+  }
+
+  factory ClashLibHandler() {
+    _instance ??= ClashLibHandler._internal();
+    return _instance!;
+  }
+
+  initMessage(ReceivePort receivePort) {
     clashFFI.initMessage(
-      receiver.sendPort.nativePort,
+      receivePort.sendPort.nativePort,
     );
   }
 
@@ -125,10 +442,7 @@ class ClashLib with ClashInterface {
   }
 
   @override
-  Future<String> updateGeoData({
-    required String geoType,
-    required String geoName,
-  }) {
+  Future<String> updateGeoData(UpdateGeoDataParams params) {
     final completer = Completer<String>();
     final receiver = ReceivePort();
     receiver.listen((message) {
@@ -137,8 +451,8 @@ class ClashLib with ClashInterface {
         receiver.close();
       }
     });
-    final geoTypeChar = geoType.toNativeUtf8().cast<Char>();
-    final geoNameChar = geoName.toNativeUtf8().cast<Char>();
+    final geoTypeChar = params.geoType.toNativeUtf8().cast<Char>();
+    final geoNameChar = params.geoName.toNativeUtf8().cast<Char>();
     clashFFI.updateGeoData(
       geoTypeChar,
       geoNameChar,
@@ -340,10 +654,9 @@ class ClashLib with ClashInterface {
   }
 
   /// Android
-
-  startTun(int fd, int port) {
+  startTun(StartTunParams params) {
     if (!Platform.isAndroid) return;
-    clashFFI.startTUN(fd, port);
+    clashFFI.startTUN(params.fd, params.port);
   }
 
   stopTun() {
@@ -351,7 +664,6 @@ class ClashLib with ClashInterface {
   }
 
   updateDns(String dns) {
-    if (!Platform.isAndroid) return;
     final dnsChar = dns.toNativeUtf8().cast<Char>();
     clashFFI.updateDns(dnsChar);
     malloc.free(dnsChar);

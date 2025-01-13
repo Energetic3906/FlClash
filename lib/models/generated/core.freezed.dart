@@ -1423,6 +1423,354 @@ abstract class _ChangeProxyParams implements ChangeProxyParams {
       throw _privateConstructorUsedError;
 }
 
+UpdateGeoDataParams _$UpdateGeoDataParamsFromJson(Map<String, dynamic> json) {
+  return _UpdateGeoDataParams.fromJson(json);
+}
+
+/// @nodoc
+mixin _$UpdateGeoDataParams {
+  @JsonKey(name: "geo-type")
+  String get geoType => throw _privateConstructorUsedError;
+  @JsonKey(name: "geo-name")
+  String get geoName => throw _privateConstructorUsedError;
+
+  /// Serializes this UpdateGeoDataParams to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of UpdateGeoDataParams
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $UpdateGeoDataParamsCopyWith<UpdateGeoDataParams> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $UpdateGeoDataParamsCopyWith<$Res> {
+  factory $UpdateGeoDataParamsCopyWith(
+          UpdateGeoDataParams value, $Res Function(UpdateGeoDataParams) then) =
+      _$UpdateGeoDataParamsCopyWithImpl<$Res, UpdateGeoDataParams>;
+  @useResult
+  $Res call(
+      {@JsonKey(name: "geo-type") String geoType,
+      @JsonKey(name: "geo-name") String geoName});
+}
+
+/// @nodoc
+class _$UpdateGeoDataParamsCopyWithImpl<$Res, $Val extends UpdateGeoDataParams>
+    implements $UpdateGeoDataParamsCopyWith<$Res> {
+  _$UpdateGeoDataParamsCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of UpdateGeoDataParams
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? geoType = null,
+    Object? geoName = null,
+  }) {
+    return _then(_value.copyWith(
+      geoType: null == geoType
+          ? _value.geoType
+          : geoType // ignore: cast_nullable_to_non_nullable
+              as String,
+      geoName: null == geoName
+          ? _value.geoName
+          : geoName // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$UpdateGeoDataParamsImplCopyWith<$Res>
+    implements $UpdateGeoDataParamsCopyWith<$Res> {
+  factory _$$UpdateGeoDataParamsImplCopyWith(_$UpdateGeoDataParamsImpl value,
+          $Res Function(_$UpdateGeoDataParamsImpl) then) =
+      __$$UpdateGeoDataParamsImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {@JsonKey(name: "geo-type") String geoType,
+      @JsonKey(name: "geo-name") String geoName});
+}
+
+/// @nodoc
+class __$$UpdateGeoDataParamsImplCopyWithImpl<$Res>
+    extends _$UpdateGeoDataParamsCopyWithImpl<$Res, _$UpdateGeoDataParamsImpl>
+    implements _$$UpdateGeoDataParamsImplCopyWith<$Res> {
+  __$$UpdateGeoDataParamsImplCopyWithImpl(_$UpdateGeoDataParamsImpl _value,
+      $Res Function(_$UpdateGeoDataParamsImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of UpdateGeoDataParams
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? geoType = null,
+    Object? geoName = null,
+  }) {
+    return _then(_$UpdateGeoDataParamsImpl(
+      geoType: null == geoType
+          ? _value.geoType
+          : geoType // ignore: cast_nullable_to_non_nullable
+              as String,
+      geoName: null == geoName
+          ? _value.geoName
+          : geoName // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$UpdateGeoDataParamsImpl implements _UpdateGeoDataParams {
+  const _$UpdateGeoDataParamsImpl(
+      {@JsonKey(name: "geo-type") required this.geoType,
+      @JsonKey(name: "geo-name") required this.geoName});
+
+  factory _$UpdateGeoDataParamsImpl.fromJson(Map<String, dynamic> json) =>
+      _$$UpdateGeoDataParamsImplFromJson(json);
+
+  @override
+  @JsonKey(name: "geo-type")
+  final String geoType;
+  @override
+  @JsonKey(name: "geo-name")
+  final String geoName;
+
+  @override
+  String toString() {
+    return 'UpdateGeoDataParams(geoType: $geoType, geoName: $geoName)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$UpdateGeoDataParamsImpl &&
+            (identical(other.geoType, geoType) || other.geoType == geoType) &&
+            (identical(other.geoName, geoName) || other.geoName == geoName));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, geoType, geoName);
+
+  /// Create a copy of UpdateGeoDataParams
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$UpdateGeoDataParamsImplCopyWith<_$UpdateGeoDataParamsImpl> get copyWith =>
+      __$$UpdateGeoDataParamsImplCopyWithImpl<_$UpdateGeoDataParamsImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$UpdateGeoDataParamsImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _UpdateGeoDataParams implements UpdateGeoDataParams {
+  const factory _UpdateGeoDataParams(
+          {@JsonKey(name: "geo-type") required final String geoType,
+          @JsonKey(name: "geo-name") required final String geoName}) =
+      _$UpdateGeoDataParamsImpl;
+
+  factory _UpdateGeoDataParams.fromJson(Map<String, dynamic> json) =
+      _$UpdateGeoDataParamsImpl.fromJson;
+
+  @override
+  @JsonKey(name: "geo-type")
+  String get geoType;
+  @override
+  @JsonKey(name: "geo-name")
+  String get geoName;
+
+  /// Create a copy of UpdateGeoDataParams
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$UpdateGeoDataParamsImplCopyWith<_$UpdateGeoDataParamsImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+StartTunParams _$StartTunParamsFromJson(Map<String, dynamic> json) {
+  return _StartTunParams.fromJson(json);
+}
+
+/// @nodoc
+mixin _$StartTunParams {
+  int get fd => throw _privateConstructorUsedError;
+  int get port => throw _privateConstructorUsedError;
+
+  /// Serializes this StartTunParams to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of StartTunParams
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $StartTunParamsCopyWith<StartTunParams> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $StartTunParamsCopyWith<$Res> {
+  factory $StartTunParamsCopyWith(
+          StartTunParams value, $Res Function(StartTunParams) then) =
+      _$StartTunParamsCopyWithImpl<$Res, StartTunParams>;
+  @useResult
+  $Res call({int fd, int port});
+}
+
+/// @nodoc
+class _$StartTunParamsCopyWithImpl<$Res, $Val extends StartTunParams>
+    implements $StartTunParamsCopyWith<$Res> {
+  _$StartTunParamsCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of StartTunParams
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? fd = null,
+    Object? port = null,
+  }) {
+    return _then(_value.copyWith(
+      fd: null == fd
+          ? _value.fd
+          : fd // ignore: cast_nullable_to_non_nullable
+              as int,
+      port: null == port
+          ? _value.port
+          : port // ignore: cast_nullable_to_non_nullable
+              as int,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$StartTunParamsImplCopyWith<$Res>
+    implements $StartTunParamsCopyWith<$Res> {
+  factory _$$StartTunParamsImplCopyWith(_$StartTunParamsImpl value,
+          $Res Function(_$StartTunParamsImpl) then) =
+      __$$StartTunParamsImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({int fd, int port});
+}
+
+/// @nodoc
+class __$$StartTunParamsImplCopyWithImpl<$Res>
+    extends _$StartTunParamsCopyWithImpl<$Res, _$StartTunParamsImpl>
+    implements _$$StartTunParamsImplCopyWith<$Res> {
+  __$$StartTunParamsImplCopyWithImpl(
+      _$StartTunParamsImpl _value, $Res Function(_$StartTunParamsImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of StartTunParams
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? fd = null,
+    Object? port = null,
+  }) {
+    return _then(_$StartTunParamsImpl(
+      fd: null == fd
+          ? _value.fd
+          : fd // ignore: cast_nullable_to_non_nullable
+              as int,
+      port: null == port
+          ? _value.port
+          : port // ignore: cast_nullable_to_non_nullable
+              as int,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$StartTunParamsImpl implements _StartTunParams {
+  const _$StartTunParamsImpl({required this.fd, required this.port});
+
+  factory _$StartTunParamsImpl.fromJson(Map<String, dynamic> json) =>
+      _$$StartTunParamsImplFromJson(json);
+
+  @override
+  final int fd;
+  @override
+  final int port;
+
+  @override
+  String toString() {
+    return 'StartTunParams(fd: $fd, port: $port)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$StartTunParamsImpl &&
+            (identical(other.fd, fd) || other.fd == fd) &&
+            (identical(other.port, port) || other.port == port));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, fd, port);
+
+  /// Create a copy of StartTunParams
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$StartTunParamsImplCopyWith<_$StartTunParamsImpl> get copyWith =>
+      __$$StartTunParamsImplCopyWithImpl<_$StartTunParamsImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$StartTunParamsImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _StartTunParams implements StartTunParams {
+  const factory _StartTunParams(
+      {required final int fd, required final int port}) = _$StartTunParamsImpl;
+
+  factory _StartTunParams.fromJson(Map<String, dynamic> json) =
+      _$StartTunParamsImpl.fromJson;
+
+  @override
+  int get fd;
+  @override
+  int get port;
+
+  /// Create a copy of StartTunParams
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$StartTunParamsImplCopyWith<_$StartTunParamsImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
 AppMessage _$AppMessageFromJson(Map<String, dynamic> json) {
   return _AppMessage.fromJson(json);
 }

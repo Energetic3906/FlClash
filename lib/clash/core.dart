@@ -135,6 +135,9 @@ class ClashCore {
   Future<List<ExternalProvider>> getExternalProviders() async {
     final externalProvidersRawString =
         await clashInterface.getExternalProviders();
+    if (externalProvidersRawString.isEmpty) {
+      return [];
+    }
     return Isolate.run<List<ExternalProvider>>(
       () {
         final externalProviders =
@@ -161,11 +164,8 @@ class ClashCore {
     return ExternalProvider.fromJson(json.decode(externalProvidersRawString));
   }
 
-  Future<String> updateGeoData({
-    required String geoType,
-    required String geoName,
-  }) {
-    return clashInterface.updateGeoData(geoType: geoType, geoName: geoName);
+  Future<String> updateGeoData(UpdateGeoDataParams params) {
+    return clashInterface.updateGeoData(params);
   }
 
   Future<String> sideLoadExternalProvider({
@@ -197,6 +197,9 @@ class ClashCore {
 
   Future<Traffic> getTraffic(bool value) async {
     final trafficString = await clashInterface.getTraffic(value);
+    if (trafficString.isEmpty) {
+      return Traffic();
+    }
     return Traffic.fromMap(json.decode(trafficString));
   }
 
@@ -213,11 +216,17 @@ class ClashCore {
 
   Future<Traffic> getTotalTraffic(bool value) async {
     final totalTrafficString = await clashInterface.getTotalTraffic(value);
+    if (totalTrafficString.isEmpty) {
+      return Traffic();
+    }
     return Traffic.fromMap(json.decode(totalTrafficString));
   }
 
   Future<int> getMemory() async {
     final value = await clashInterface.getMemory();
+    if (value.isEmpty) {
+      return 0;
+    }
     return int.parse(value);
   }
 

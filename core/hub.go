@@ -240,17 +240,6 @@ func handleGetConnections() string {
 	return string(data)
 }
 
-func handleCloseConnectionsUnLock() bool {
-	statistic.DefaultManager.Range(func(c statistic.Tracker) bool {
-		err := c.Close()
-		if err != nil {
-			return false
-		}
-		return true
-	})
-	return true
-}
-
 func handleCloseConnections() bool {
 	runLock.Lock()
 	defer runLock.Unlock()

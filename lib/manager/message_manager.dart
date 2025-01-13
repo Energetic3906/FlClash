@@ -234,7 +234,7 @@ class MessageManagerState extends State<MessageManager>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 for (final message in messages) ...[
-                                  if (message != messages.last)
+                                  if (message != messages.first)
                                     SizedBox(
                                       height: 8,
                                     ),

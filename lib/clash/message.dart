@@ -10,7 +10,6 @@ class ClashMessage {
   final controller = StreamController();
 
   ClashMessage._() {
-    clashLib?.receiver.listen(controller.add);
     controller.stream.listen(
       (message) {
         final m = AppMessage.fromJson(json.decode(message));

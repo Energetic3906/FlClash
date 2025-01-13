@@ -57,6 +57,7 @@ func handleAction(action *Action) {
 		return
 	case forceGcMethod:
 		handleForceGc()
+		action.callback(true)
 		return
 	case shutdownMethod:
 		action.callback(handleShutdown())
@@ -88,6 +89,7 @@ func handleAction(action *Action) {
 		return
 	case resetTrafficMethod:
 		handleResetTraffic()
+		action.callback(true)
 		return
 	case asyncTestDelayMethod:
 		data := action.Data.(string)
@@ -119,8 +121,8 @@ func handleAction(action *Action) {
 			action.callback(err.Error())
 			return
 		}
-		geoType := params["geoType"]
-		geoName := params["geoName"]
+		geoType := params["geo-type"]
+		geoName := params["geo-name"]
 		handleUpdateGeoData(geoType, geoName, func(value string) {
 			action.callback(value)
 		})
@@ -147,9 +149,11 @@ func handleAction(action *Action) {
 		return
 	case startLogMethod:
 		handleStartLog()
+		action.callback(true)
 		return
 	case stopLogMethod:
 		handleStopLog()
+		action.callback(true)
 		return
 	case startListenerMethod:
 		action.callback(handleStartListener())

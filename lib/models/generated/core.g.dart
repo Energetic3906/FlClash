@@ -127,6 +127,33 @@ Map<String, dynamic> _$$ChangeProxyParamsImplToJson(
       'proxy-name': instance.proxyName,
     };
 
+_$UpdateGeoDataParamsImpl _$$UpdateGeoDataParamsImplFromJson(
+        Map<String, dynamic> json) =>
+    _$UpdateGeoDataParamsImpl(
+      geoType: json['geo-type'] as String,
+      geoName: json['geo-name'] as String,
+    );
+
+Map<String, dynamic> _$$UpdateGeoDataParamsImplToJson(
+        _$UpdateGeoDataParamsImpl instance) =>
+    <String, dynamic>{
+      'geo-type': instance.geoType,
+      'geo-name': instance.geoName,
+    };
+
+_$StartTunParamsImpl _$$StartTunParamsImplFromJson(Map<String, dynamic> json) =>
+    _$StartTunParamsImpl(
+      fd: (json['fd'] as num).toInt(),
+      port: (json['port'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$$StartTunParamsImplToJson(
+        _$StartTunParamsImpl instance) =>
+    <String, dynamic>{
+      'fd': instance.fd,
+      'port': instance.port,
+    };
+
 _$AppMessageImpl _$$AppMessageImplFromJson(Map<String, dynamic> json) =>
     _$AppMessageImpl(
       type: $enumDecode(_$AppMessageTypeEnumMap, json['type']),
@@ -331,4 +358,11 @@ const _$ActionMethodEnumMap = {
   ActionMethod.stopListener: 'stopListener',
   ActionMethod.getCountryCode: 'getCountryCode',
   ActionMethod.getMemory: 'getMemory',
+  ActionMethod.setFdMap: 'setFdMap',
+  ActionMethod.setProcessMap: 'setProcessMap',
+  ActionMethod.setState: 'setState',
+  ActionMethod.getCurrentProfileName: 'getCurrentProfileName',
+  ActionMethod.startTun: 'startTun',
+  ActionMethod.stopTun: 'stopTun',
+  ActionMethod.getRunTime: 'getRunTime',
 };

@@ -355,7 +355,7 @@ class AppController {
 
   _initStatus() async {
     if (Platform.isAndroid) {
-      globalState.updateStartTime();
+      await globalState.updateStartTime();
     }
     final status =
         globalState.isStart == true ? true : config.appSetting.autoRun;

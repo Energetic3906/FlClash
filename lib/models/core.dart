@@ -7,6 +7,7 @@ import 'package:fl_clash/models/models.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'generated/core.freezed.dart';
+
 part 'generated/core.g.dart';
 
 abstract mixin class AppMessageListener {
@@ -103,6 +104,28 @@ class ChangeProxyParams with _$ChangeProxyParams {
 
   factory ChangeProxyParams.fromJson(Map<String, Object?> json) =>
       _$ChangeProxyParamsFromJson(json);
+}
+
+@freezed
+class UpdateGeoDataParams with _$UpdateGeoDataParams {
+  const factory UpdateGeoDataParams({
+    @JsonKey(name: "geo-type") required String geoType,
+    @JsonKey(name: "geo-name") required String geoName,
+  }) = _UpdateGeoDataParams;
+
+  factory UpdateGeoDataParams.fromJson(Map<String, Object?> json) =>
+      _$UpdateGeoDataParamsFromJson(json);
+}
+
+@freezed
+class StartTunParams with _$StartTunParams {
+  const factory StartTunParams({
+    required int fd,
+    required int port,
+  }) = _StartTunParams;
+
+  factory StartTunParams.fromJson(Map<String, Object?> json) =>
+      _$StartTunParamsFromJson(json);
 }
 
 @freezed

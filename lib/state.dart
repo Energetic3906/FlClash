@@ -135,7 +135,7 @@ class GlobalState {
     required Config config,
     bool isPatch = true,
   }) async {
-    await clashService?.startCore();
+    await clashService?.reStart();
     await initCore(
       appState: appState,
       clashConfig: clashConfig,
@@ -146,8 +146,8 @@ class GlobalState {
     }
   }
 
-  updateStartTime() {
-    startTime = clashLib?.getRunTime();
+  Future updateStartTime() async {
+    startTime = await clashLib?.getRunTime();
   }
 
   Future handleStop() async {
@@ -290,7 +290,7 @@ class GlobalState {
     final traffic = await clashCore.getTraffic(onlyProxy);
     if (Platform.isAndroid && isVpnService == true) {
       vpn?.startForeground(
-        title: clashLib?.getCurrentProfileName() ?? "",
+        title: await clashLib?.getCurrentProfileName() ?? "",
         content: "$traffic",
       );
     } else {

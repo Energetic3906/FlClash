@@ -241,6 +241,17 @@ enum ActionMethod {
   stopListener,
   getCountryCode,
   getMemory,
+
+  ///Android,
+  setFdMap,
+  setProcessMap,
+  setState,
+  getCurrentProfileName,
+  startTun,
+  stopTun,
+  getRunTime,
+  updateDns,
+  getAndroidVpnOptions,
 }
 
 enum AuthorizeCode { none, success, error }
