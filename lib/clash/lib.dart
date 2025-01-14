@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
 import 'dart:isolate';
+import 'dart:ui';
 
 import 'package:ffi/ffi.dart';
 import 'package:fl_clash/common/constant.dart';
@@ -16,8 +17,8 @@ import 'interface.dart';
 class ClashLib extends ClashHandlerInterface {
   static ClashLib? _instance;
   Isolate? _isolate;
+  SendPort? sendPort;
   final receiverPort = ReceivePort();
-  Completer<SendPort> sendPortCompleter = Completer();
 
   ClashLib._internal() {
     _initClashLibHandler();
@@ -31,194 +32,22 @@ class ClashLib extends ClashHandlerInterface {
   _isolateEnter(SendPort sendPort) {
     final clashLibHandler = ClashLibHandler();
     final innerReceiverPort = ReceivePort();
-    Action? handleActionOnIsolate({
-      required ClashLibHandler handler,
-      required Action action,
-    })  {
-      switch (action.method) {
-        case ActionMethod.message:
-          return action.copyWith(
-            data: true,
-          );
-        default:
-          return action.copyWith(
-            data: true,
-          );
-        // case ActionMethod.initClash:
-        //   return action.copyWith(
-        //     data: handler.init(
-        //       action.data as String,
-        //     ),
-        //   );
-        // case ActionMethod.getIsInit:
-        //   return action.copyWith(
-        //     data: handler.isInit,
-        //   );
-        // case ActionMethod.forceGc:
-        //   handler.forceGc();
-        //   return action.copyWith(
-        //     data: true,
-        //   );
-        // case ActionMethod.shutdown:
-        //   await handler.shutdown();
-        //   return action.copyWith(
-        //     data: true,
-        //   );
-        // case ActionMethod.validateConfig:
-        //   final message = await handler.validateConfig(action.data as String);
-        //   return action.copyWith(
-        //     data: message,
-        //   );
-        // case ActionMethod.updateConfig:
-        //   return action.copyWith(
-        //     data: await handler.updateConfig(action.data as UpdateConfigParams),
-        //   );
-        // case ActionMethod.getProxies:
-        //   return action.copyWith(
-        //     data: handler.getProxies(),
-        //   );
-        // case ActionMethod.changeProxy:
-        //   return action.copyWith(
-        //     data: await handler.changeProxy(action.data as ChangeProxyParams),
-        //   );
-        // case ActionMethod.getTraffic:
-        //   return action.copyWith(
-        //     data: handler.getTraffic(action.data as bool),
-        //   );
-        // case ActionMethod.getTotalTraffic:
-        //   return action.copyWith(
-        //     data: handler.getTotalTraffic(action.data as bool),
-        //   );
-        // case ActionMethod.resetTraffic:
-        //   handler.resetTraffic();
-        //   return action.copyWith(
-        //     data: true,
-        //   );
-        // case ActionMethod.asyncTestDelay:
-        //   return action.copyWith(
-        //     data: await handler.asyncTestDelay(action.data as String),
-        //   );
-        // case ActionMethod.getConnections:
-        //   return action.copyWith(
-        //     data: handler.getConnections(),
-        //   );
-        // case ActionMethod.closeConnections:
-        //   return action.copyWith(
-        //     data: await handler.closeConnections(),
-        //   );
-        // case ActionMethod.closeConnection:
-        //   return action.copyWith(
-        //     data: await handler.closeConnection(action.data as String),
-        //   );
-        // case ActionMethod.getExternalProviders:
-        //   return action.copyWith(
-        //     data: await handler.closeConnection(action.data as String),
-        //   );
-        // case ActionMethod.getExternalProvider:
-        //   return action.copyWith(
-        //     data: handler.getExternalProvider(action.data as String),
-        //   );
-        // case ActionMethod.updateGeoData:
-        //   return action.copyWith(
-        //     data: await handler.updateGeoData(action.data as UpdateGeoDataParams),
-        //   );
-        // case ActionMethod.updateExternalProvider:
-        //   return action.copyWith(
-        //     data: await handler.updateExternalProvider(action.data as String),
-        //   );
-        // case ActionMethod.sideLoadExternalProvider:
-        //   return action.copyWith(
-        //     data: await handler.updateExternalProvider(action.data as String),
-        //   );
-        // case ActionMethod.startLog:
-        //   handler.startLog();
-        //   return action.copyWith(
-        //     data: true,
-        //   );
-        // case ActionMethod.stopLog:
-        //   handler.startLog();
-        //   return action.copyWith(
-        //     data: true,
-        //   );
-        // case ActionMethod.startListener:
-        //   return action.copyWith(
-        //     data: await handler.startListener(),
-        //   );
-        // case ActionMethod.stopListener:
-        //   return action.copyWith(
-        //     data: await handler.stopListener(),
-        //   );
-        // case ActionMethod.getCountryCode:
-        //   return action.copyWith(
-        //     data: await handler.getCountryCode(action.data as String),
-        //   );
-        // case ActionMethod.getMemory:
-        //   return action.copyWith(
-        //     data: await handler.getMemory(),
-        //   );
-        // case ActionMethod.setFdMap:
-        //   await handler.setFdMap(action.data as int);
-        //   return action.copyWith(
-        //     data: true,
-        //   );
-        // case ActionMethod.setProcessMap:
-        //   await handler.setProcessMap(action.data as ProcessMapItem);
-        //   return action.copyWith(
-        //     data: true,
-        //   );
-        // case ActionMethod.setState:
-        //   await handler.setState(action.data as CoreState);
-        //   return action.copyWith(
-        //     data: true,
-        //   );
-        // case ActionMethod.getCurrentProfileName:
-        //   return action.copyWith(
-        //     data: handler.getCurrentProfileName(),
-        //   );
-        // case ActionMethod.startTun:
-        //   return action.copyWith(
-        //     data: handler.startTun(action.data as StartTunParams),
-        //   );
-        // case ActionMethod.stopTun:
-        //   handler.stopTun();
-        //   return action.copyWith(
-        //     data: true,
-        //   );
-        // case ActionMethod.getRunTime:
-        //   return action.copyWith(
-        //     data: handler.getRunTime(),
-        //   );
-        // case ActionMethod.updateDns:
-        //   return action.copyWith(
-        //     data: handler.updateDns(action.data as String),
-        //   );
-        // case ActionMethod.getAndroidVpnOptions:
-        //   return action.copyWith(
-        //     data: handler.getAndroidVpnOptions(),
-        //   );
-      }
-    }
-
     innerReceiverPort.listen((message) async {
-      // final action = Action.fromJson(json.decode(message));
-      // final nextAction =  handleActionOnIsolate(
-      //   handler: clashLibHandler,
-      //   action: action,
-      // );
-      // if (nextAction == null) {
-      //   return;
-      // }
-      // sendPort.send(nextAction.toJson);
+      final res = await clashLibHandler.invokeAction(message);
+      final action = Action.fromJson(json.decode(res));
+      sendPort.send(json.encode(action));
     });
     if (!globalState.isVpnService) {
       final messageReceiverPort = ReceivePort();
       clashLibHandler.initMessage(messageReceiverPort);
       messageReceiverPort.listen((message) {
         sendPort.send(
-          Action(
-            method: ActionMethod.message,
-            data: message,
-            id: "",
+          json.encode(
+            Action(
+              method: ActionMethod.message,
+              data: message,
+              id: "",
+            ),
           ),
         );
       });
@@ -226,23 +55,21 @@ class ClashLib extends ClashHandlerInterface {
     sendPort.send(innerReceiverPort.sendPort);
   }
 
-  _initSendPort(SendPort sendPort) async {
-    sendPortCompleter = Completer();
-    sendPortCompleter.complete(sendPort);
-  }
-
   _initClashLibHandler() async {
     receiverPort.listen((message) {
       if (message is SendPort) {
-        _initSendPort(message);
+        sendPort = message;
       } else {
         handleAction(
-          Action.fromJson(
-            json.decode(message.trim()),
-          ),
+          Action.fromJson(json.decode(message)),
         );
       }
     });
+
+    IsolateNameServer.registerPortWithName(
+      receiverPort.sendPort,
+      'mainIsolate',
+    );
     _isolate = await Isolate.spawn(_isolateEnter, receiverPort.sendPort);
   }
 
@@ -265,8 +92,7 @@ class ClashLib extends ClashHandlerInterface {
 
   @override
   sendMessage(String message) async {
-    final sendPort = await sendPortCompleter.future;
-    sendPort.send(message);
+    sendPort?.send(message);
   }
 
   Future<bool> setFdMap(int fd) {
@@ -322,14 +148,18 @@ class ClashLib extends ClashHandlerInterface {
     );
   }
 
-  Future<DateTime?> getRunTime() {
-    return invoke<DateTime?>(
+  Future<DateTime?> getRunTime() async {
+    final runTimeString = await invoke<String>(
       method: ActionMethod.getRunTime,
     );
+    if (runTimeString.isEmpty) {
+      return null;
+    }
+    return DateTime.fromMillisecondsSinceEpoch(int.parse(runTimeString));
   }
 }
 
-class ClashLibHandler with ClashInterface {
+class ClashLibHandler {
   static ClashLibHandler? _instance;
 
   late final ClashFFI clashFFI;
@@ -349,13 +179,31 @@ class ClashLibHandler with ClashInterface {
     return _instance!;
   }
 
+  Future<String> invokeAction(String actionParams) {
+    final completer = Completer<String>();
+    final receiver = ReceivePort();
+    receiver.listen((message) {
+      if (!completer.isCompleted) {
+        completer.complete(message);
+        receiver.close();
+      }
+    });
+
+    final actionParamsChar = actionParams.toNativeUtf8().cast<Char>();
+    clashFFI.invokeAction(
+      actionParamsChar,
+      receiver.sendPort.nativePort,
+    );
+    malloc.free(actionParamsChar);
+    return completer.future;
+  }
+
   initMessage(ReceivePort receivePort) {
     clashFFI.initMessage(
       receivePort.sendPort.nativePort,
     );
   }
 
-  @override
   bool init(String homeDir) {
     final homeDirChar = homeDir.toNativeUtf8().cast<Char>();
     final isInit = clashFFI.initClash(homeDirChar) == 1;
@@ -363,16 +211,13 @@ class ClashLibHandler with ClashInterface {
     return isInit;
   }
 
-  @override
   shutdown() async {
     clashFFI.shutdownClash();
     lib.close();
   }
 
-  @override
   bool get isInit => clashFFI.getIsInit() == 1;
 
-  @override
   Future<String> validateConfig(String data) {
     final completer = Completer<String>();
     final receiver = ReceivePort();
@@ -391,8 +236,7 @@ class ClashLibHandler with ClashInterface {
     return completer.future;
   }
 
-  @override
-  Future<String> updateConfig(UpdateConfigParams updateConfigParams) {
+  Future<String> updateConfig(String params) {
     final completer = Completer<String>();
     final receiver = ReceivePort();
     receiver.listen((message) {
@@ -401,7 +245,6 @@ class ClashLibHandler with ClashInterface {
         receiver.close();
       }
     });
-    final params = json.encode(updateConfigParams);
     final paramsChar = params.toNativeUtf8().cast<Char>();
     clashFFI.updateConfig(
       paramsChar,
@@ -411,7 +254,6 @@ class ClashLibHandler with ClashInterface {
     return completer.future;
   }
 
-  @override
   String getProxies() {
     final proxiesRaw = clashFFI.getProxies();
     final proxiesRawString = proxiesRaw.cast<Utf8>().toDartString();
@@ -419,7 +261,6 @@ class ClashLibHandler with ClashInterface {
     return proxiesRawString;
   }
 
-  @override
   String getExternalProviders() {
     final externalProvidersRaw = clashFFI.getExternalProviders();
     final externalProvidersRawString =
@@ -428,7 +269,6 @@ class ClashLibHandler with ClashInterface {
     return externalProvidersRawString;
   }
 
-  @override
   String getExternalProvider(String externalProviderName) {
     final externalProviderNameChar =
         externalProviderName.toNativeUtf8().cast<Char>();
@@ -441,7 +281,6 @@ class ClashLibHandler with ClashInterface {
     return externalProviderRawString;
   }
 
-  @override
   Future<String> updateGeoData(UpdateGeoDataParams params) {
     final completer = Completer<String>();
     final receiver = ReceivePort();
@@ -463,7 +302,6 @@ class ClashLibHandler with ClashInterface {
     return completer.future;
   }
 
-  @override
   Future<String> sideLoadExternalProvider({
     required String providerName,
     required String data,
@@ -488,7 +326,6 @@ class ClashLibHandler with ClashInterface {
     return completer.future;
   }
 
-  @override
   Future<String> updateExternalProvider(String providerName) {
     final completer = Completer<String>();
     final receiver = ReceivePort();
@@ -507,7 +344,6 @@ class ClashLibHandler with ClashInterface {
     return completer.future;
   }
 
-  @override
   Future<String> changeProxy(ChangeProxyParams changeProxyParams) {
     final completer = Completer<String>();
     final receiver = ReceivePort();
@@ -527,7 +363,6 @@ class ClashLibHandler with ClashInterface {
     return completer.future;
   }
 
-  @override
   String getConnections() {
     final connectionsDataRaw = clashFFI.getConnections();
     final connectionsString = connectionsDataRaw.cast<Utf8>().toDartString();
@@ -535,7 +370,6 @@ class ClashLibHandler with ClashInterface {
     return connectionsString;
   }
 
-  @override
   closeConnection(String id) {
     final idChar = id.toNativeUtf8().cast<Char>();
     clashFFI.closeConnection(idChar);
@@ -543,25 +377,21 @@ class ClashLibHandler with ClashInterface {
     return true;
   }
 
-  @override
   closeConnections() {
     clashFFI.closeConnections();
     return true;
   }
 
-  @override
   startListener() async {
     clashFFI.startListener();
     return true;
   }
 
-  @override
   stopListener() async {
     clashFFI.stopListener();
     return true;
   }
 
-  @override
   Future<String> asyncTestDelay(String proxyName) {
     final delayParams = {
       "proxy-name": proxyName,
@@ -585,7 +415,6 @@ class ClashLibHandler with ClashInterface {
     return completer.future;
   }
 
-  @override
   String getTraffic(bool value) {
     final trafficRaw = clashFFI.getTraffic(value ? 1 : 0);
     final trafficString = trafficRaw.cast<Utf8>().toDartString();
@@ -593,34 +422,28 @@ class ClashLibHandler with ClashInterface {
     return trafficString;
   }
 
-  @override
   String getTotalTraffic(bool value) {
     final trafficRaw = clashFFI.getTotalTraffic(value ? 1 : 0);
     clashFFI.freeCString(trafficRaw);
     return trafficRaw.cast<Utf8>().toDartString();
   }
 
-  @override
   void resetTraffic() {
     clashFFI.resetTraffic();
   }
 
-  @override
   void startLog() {
     clashFFI.startLog();
   }
 
-  @override
   stopLog() {
     clashFFI.stopLog();
   }
 
-  @override
   forceGc() {
     clashFFI.forceGc();
   }
 
-  @override
   FutureOr<String> getCountryCode(String ip) {
     final completer = Completer<String>();
     final receiver = ReceivePort();
@@ -639,7 +462,6 @@ class ClashLibHandler with ClashInterface {
     return completer.future;
   }
 
-  @override
   FutureOr<String> getMemory() {
     final completer = Completer<String>();
     final receiver = ReceivePort();
@@ -700,12 +522,11 @@ class ClashLibHandler with ClashInterface {
     clashFFI.setFdMap(fd);
   }
 
-  DateTime? getRunTime() {
+  String? getRunTime() {
     final runTimeRaw = clashFFI.getRunTime();
     final runTimeString = runTimeRaw.cast<Utf8>().toDartString();
     clashFFI.freeCString(runTimeRaw);
-    if (runTimeString.isEmpty) return null;
-    return DateTime.fromMillisecondsSinceEpoch(int.parse(runTimeString));
+    return runTimeString;
   }
 }
 

@@ -7,6 +7,7 @@ import 'package:fl_clash/common/future.dart';
 import 'package:fl_clash/common/other.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
+import 'package:flutter/material.dart' hide Action;
 
 mixin ClashInterface {
   FutureOr<bool> init(String homeDir);
@@ -70,44 +71,48 @@ abstract class ClashHandlerInterface with ClashInterface {
 
   handleAction(Action action) {
     final completer = callbackCompleterMap[action.id];
-    switch (action.method) {
-      case ActionMethod.initClash:
-      case ActionMethod.shutdown:
-      case ActionMethod.getIsInit:
-      case ActionMethod.startListener:
-      case ActionMethod.resetTraffic:
-      case ActionMethod.closeConnections:
-      case ActionMethod.closeConnection:
-      case ActionMethod.stopListener:
-        completer?.complete(action.data as bool);
-        return;
-      case ActionMethod.changeProxy:
-      case ActionMethod.getProxies:
-      case ActionMethod.getTraffic:
-      case ActionMethod.getTotalTraffic:
-      case ActionMethod.asyncTestDelay:
-      case ActionMethod.getConnections:
-      case ActionMethod.getExternalProviders:
-      case ActionMethod.getExternalProvider:
-      case ActionMethod.validateConfig:
-      case ActionMethod.updateConfig:
-      case ActionMethod.updateGeoData:
-      case ActionMethod.updateExternalProvider:
-      case ActionMethod.sideLoadExternalProvider:
-      case ActionMethod.getCountryCode:
-      case ActionMethod.getMemory:
-        completer?.complete(action.data as String);
-        return;
-      case ActionMethod.message:
-        clashMessage.controller.add(action.data as String);
-        completer?.complete(true);
-        return;
-      case ActionMethod.forceGc:
-      case ActionMethod.startLog:
-      case ActionMethod.stopLog:
-      default:
-        completer?.complete(true);
-        return;
+    try {
+      switch (action.method) {
+        case ActionMethod.initClash:
+        case ActionMethod.shutdown:
+        case ActionMethod.getIsInit:
+        case ActionMethod.startListener:
+        case ActionMethod.resetTraffic:
+        case ActionMethod.closeConnections:
+        case ActionMethod.closeConnection:
+        case ActionMethod.stopListener:
+          completer?.complete(action.data as bool);
+          return;
+        case ActionMethod.changeProxy:
+        case ActionMethod.getProxies:
+        case ActionMethod.getTraffic:
+        case ActionMethod.getTotalTraffic:
+        case ActionMethod.asyncTestDelay:
+        case ActionMethod.getConnections:
+        case ActionMethod.getExternalProviders:
+        case ActionMethod.getExternalProvider:
+        case ActionMethod.validateConfig:
+        case ActionMethod.updateConfig:
+        case ActionMethod.updateGeoData:
+        case ActionMethod.updateExternalProvider:
+        case ActionMethod.sideLoadExternalProvider:
+        case ActionMethod.getCountryCode:
+        case ActionMethod.getMemory:
+          completer?.complete(action.data as String);
+          return;
+        case ActionMethod.message:
+          clashMessage.controller.add(action.data as String);
+          completer?.complete(true);
+          return;
+        case ActionMethod.forceGc:
+        case ActionMethod.startLog:
+        case ActionMethod.stopLog:
+        default:
+          completer?.complete(true);
+          return;
+      }
+    } catch (_) {
+      debugPrint(action.id);
     }
   }
 
@@ -180,7 +185,9 @@ abstract class ClashHandlerInterface with ClashInterface {
 
   @override
   forceGc() {
-    invoke(method: ActionMethod.forceGc);
+    invoke(
+      method: ActionMethod.forceGc,
+    );
   }
 
   @override
@@ -309,7 +316,9 @@ abstract class ClashHandlerInterface with ClashInterface {
 
   @override
   stopLog() {
-    invoke(method: ActionMethod.stopLog);
+    invoke<bool>(
+      method: ActionMethod.stopLog,
+    );
   }
 
   @override

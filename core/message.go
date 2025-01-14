@@ -7,7 +7,8 @@ func SendMessage(message Message) {
 	if err != nil {
 		return
 	}
-	Action{
+
+	send(Action{
 		Method: messageMethod,
-	}.callback(s)
+	}.wrapMessage(s))
 }

@@ -88,3 +88,7 @@ const defaultPrimaryColor = Colors.brown;
 double getWidgetHeight(num lines) {
   return max(lines * 84 + (lines - 1) * 16, 0);
 }
+
+final mainIsolate = "FlClashMainIsolate";
+
+final serviceIsolate = "FlClashServiceIsolate";

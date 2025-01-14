@@ -8,6 +8,7 @@ package main
 import "C"
 import (
 	bridge "core/dart-bridge"
+	"encoding/json"
 	"unsafe"
 )
 
@@ -196,4 +197,19 @@ func startLog() {
 //export stopLog
 func stopLog() {
 	handleStopLog()
+}
+
+//export invokeAction
+func invokeAction(paramsChar *C.char, port C.longlong) {
+	params := C.GoString(paramsChar)
+	i := int64(port)
+	var action = &Action{}
+	err := json.Unmarshal([]byte(params), action)
+	if err != nil {
+		bridge.SendToPort(i, err.Error())
+		return
+	}
+	handleAction(action, func(bytes []byte) {
+		bridge.SendToPort(i, string(bytes))
+	})
 }

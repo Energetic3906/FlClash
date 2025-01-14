@@ -2716,6 +2716,23 @@ class ClashFFI {
       _lookup<ffi.NativeFunction<ffi.Void Function()>>('stopLog');
   late final _stopLog = _stopLogPtr.asFunction<void Function()>();
 
+  void invokeAction(
+    ffi.Pointer<ffi.Char> paramsChar,
+    int port,
+  ) {
+    return _invokeAction(
+      paramsChar,
+      port,
+    );
+  }
+
+  late final _invokeActionPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Pointer<ffi.Char>, ffi.LongLong)>>('invokeAction');
+  late final _invokeAction =
+      _invokeActionPtr.asFunction<void Function(ffi.Pointer<ffi.Char>, int)>();
+
   void startTUN(
     int fd,
     int port,

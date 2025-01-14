@@ -184,6 +184,7 @@ class GlobalState {
     required ClashConfig clashConfig,
   }) async {
     appState.isInit = await clashCore.isInit;
+    print(appState.isInit);
     if (!appState.isInit) {
       appState.isInit = await clashCore.init(
         config: config,

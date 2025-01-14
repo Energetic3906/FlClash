@@ -365,4 +365,6 @@ const _$ActionMethodEnumMap = {
   ActionMethod.startTun: 'startTun',
   ActionMethod.stopTun: 'stopTun',
   ActionMethod.getRunTime: 'getRunTime',
+  ActionMethod.updateDns: 'updateDns',
+  ActionMethod.getAndroidVpnOptions: 'getAndroidVpnOptions',
 };

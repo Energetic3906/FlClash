@@ -270,8 +270,3 @@ class Action with _$Action {
   factory Action.fromJson(Map<String, Object?> json) => _$ActionFromJson(json);
 }
 
-extension ActionExt on Action {
-  String get toJson {
-    return json.encode(this);
-  }
-}
