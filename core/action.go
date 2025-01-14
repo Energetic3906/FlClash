@@ -4,13 +4,26 @@ import (
 	"encoding/json"
 )
 
-func (action Action) Json() ([]byte, error) {
-	data, err := json.Marshal(action)
+type Action struct {
+	Id           string      `json:"id"`
+	Method       Method      `json:"method"`
+	Data         interface{} `json:"data"`
+	DefaultValue interface{} `json:"default-value"`
+}
+
+type ActionResult struct {
+	Id     string      `json:"id"`
+	Method Method      `json:"method"`
+	Data   interface{} `json:"data"`
+}
+
+func (result ActionResult) Json() ([]byte, error) {
+	data, err := json.Marshal(result)
 	return data, err
 }
 
 func (action Action) wrapMessage(data interface{}) []byte {
-	sendAction := Action{
+	sendAction := ActionResult{
 		Id:     action.Id,
 		Method: action.Method,
 		Data:   data,
@@ -145,5 +158,12 @@ func handleAction(action *Action, send func([]byte)) {
 			send(action.wrapMessage(value))
 		})
 		return
+	default:
+		handle := nextHandle(action, send)
+		if handle {
+			return
+		} else {
+			send(action.wrapMessage(action.DefaultValue))
+		}
 	}
 }

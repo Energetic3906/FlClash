@@ -69,67 +69,57 @@ func (cm *FdMap) Load(key int64) bool {
 	return ok
 }
 
-//export startTUN
-func startTUN(fd C.int, port C.longlong) {
-	i := int64(port)
-	ServicePort = i
+func handleStartTun(fd int) string {
+	tunLock.Lock()
+	defer tunLock.Unlock()
 	if fd == 0 {
-		tunLock.Lock()
-		defer tunLock.Unlock()
 		now := time.Now()
 		runTime = &now
 		SendMessage(Message{
 			Type: StartedMessage,
 			Data: strconv.FormatInt(runTime.UnixMilli(), 10),
 		})
-		return
-	}
-	initSocketHook()
-	go func() {
-		tunLock.Lock()
-		defer tunLock.Unlock()
-		f := int(fd)
-		tunListener, _ = t.Start(f, currentConfig.General.Tun.Device, currentConfig.General.Tun.Stack)
+	} else {
+		initSocketHook()
+		tunListener, _ = t.Start(fd, currentConfig.General.Tun.Device, currentConfig.General.Tun.Stack)
 		if tunListener != nil {
 			log.Infoln("TUN address: %v", tunListener.Address())
 		}
 		now := time.Now()
 		runTime = &now
-	}()
-}
-
-//export getRunTime
-func getRunTime() *C.char {
-	if runTime == nil {
-		return C.CString("")
 	}
-	return C.CString(strconv.FormatInt(runTime.UnixMilli(), 10))
+	return handleGetRunTime()
 }
 
-//export stopTun
-func stopTun() {
+func handleStopTun() {
+	tunLock.Lock()
+	defer tunLock.Unlock()
 	removeSocketHook()
+	runTime = nil
+	if tunListener != nil {
+		_ = tunListener.Close()
+	}
+}
+
+func handleGetRunTime() string {
+	return strconv.FormatInt(runTime.UnixMilli(), 10)
+}
+
+func handleSetFdMap(fd int64) {
 	go func() {
-		tunLock.Lock()
-		defer tunLock.Unlock()
-
-		runTime = nil
-
-		if tunListener != nil {
-			_ = tunListener.Close()
-		}
+		fdMap.Store(fd)
 	}()
 }
 
-//export setFdMap
-func setFdMap(fd C.long) {
-	fdInt := int64(fd)
-	go func() {
-		fdMap.Store(fdInt)
-	}()
+func handleSetProcessMap(params string) {
+	var processMapItem = &ProcessMapItem{}
+	err := json.Unmarshal([]byte(params), processMapItem)
+	if err == nil {
+		processMap.Store(processMapItem.Id, processMapItem.Value)
+	}
 }
 
-func markSocket(fd Fd) {
+func handleMarkSocket(fd Fd) {
 	SendMessage(Message{
 		Type: ProtectMessage,
 		Data: fd,
@@ -146,7 +136,7 @@ func initSocketHook() {
 			timeout := time.After(500 * time.Millisecond)
 			id := atomic.AddInt64(&fdCounter, 1)
 
-			markSocket(Fd{
+			handleMarkSocket(Fd{
 				Id:    id,
 				Value: fdInt,
 			})
@@ -203,31 +193,7 @@ func init() {
 	}
 }
 
-//export setProcessMap
-func setProcessMap(s *C.char) {
-	if s == nil {
-		return
-	}
-	paramsString := C.GoString(s)
-	go func() {
-		var processMapItem = &ProcessMapItem{}
-		err := json.Unmarshal([]byte(paramsString), processMapItem)
-		if err == nil {
-			processMap.Store(processMapItem.Id, processMapItem.Value)
-		}
-	}()
-}
-
-//export getCurrentProfileName
-func getCurrentProfileName() *C.char {
-	if state.CurrentState == nil {
-		return C.CString("")
-	}
-	return C.CString(state.CurrentState.CurrentProfileName)
-}
-
-//export getAndroidVpnOptions
-func getAndroidVpnOptions() *C.char {
+func handleGetAndroidVpnOptions() string {
 	tunLock.Lock()
 	defer tunLock.Unlock()
 	options := state.AndroidVpnOptions{
@@ -245,26 +211,59 @@ func getAndroidVpnOptions() *C.char {
 	data, err := json.Marshal(options)
 	if err != nil {
 		fmt.Println("Error:", err)
-		return C.CString("")
+		return ""
 	}
-	return C.CString(string(data))
+	return string(data)
 }
 
-//export setState
-func setState(s *C.char) {
-	paramsString := C.GoString(s)
-	err := json.Unmarshal([]byte(paramsString), state.CurrentState)
-	if err != nil {
-		return
-	}
+func handleSetState(params string) {
+	_ = json.Unmarshal([]byte(params), state.CurrentState)
 }
 
-//export updateDns
-func updateDns(s *C.char) {
-	dnsList := C.GoString(s)
+func handleUpdateDns(value string) {
 	go func() {
-		log.Infoln("[DNS] updateDns %s", dnsList)
-		dns.UpdateSystemDNS(strings.Split(dnsList, ","))
+		log.Infoln("[DNS] updateDns %s", value)
+		dns.UpdateSystemDNS(strings.Split(value, ","))
 		dns.FlushCacheWithDefaultResolver()
 	}()
+}
+
+func nextHandle(action *Action, send func([]byte)) bool {
+	switch action.Method {
+	case startTunMethod:
+		data := action.Data.(int)
+		send(action.wrapMessage(handleStartTun(data)))
+		return true
+	case stopTunMethod:
+		handleStopTun()
+		send(action.wrapMessage(true))
+		return true
+	case setStateMethod:
+		data := action.Data.(string)
+		handleSetState(data)
+		send(action.wrapMessage(true))
+		return true
+	case getAndroidVpnOptionsMethod:
+		send(action.wrapMessage(handleGetAndroidVpnOptions()))
+		return true
+	case updateDnsMethod:
+		data := action.Data.(string)
+		handleUpdateDns(data)
+		send(action.wrapMessage(true))
+		return true
+	case setFdMapMethod:
+		data := action.Data.(int64)
+		handleSetFdMap(data)
+		send(action.wrapMessage(true))
+		return true
+	case setProcessMapMethod:
+		data := action.Data.(string)
+		handleSetProcessMap(data)
+		send(action.wrapMessage(true))
+		return true
+	case getRunTimeMethod:
+		send(action.wrapMessage(handleGetRunTime()))
+		return true
+	}
+	return false
 }

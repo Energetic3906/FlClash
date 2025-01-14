@@ -43,10 +43,10 @@ class ClashLib extends ClashHandlerInterface {
       messageReceiverPort.listen((message) {
         sendPort.send(
           json.encode(
-            Action(
+            ActionResult(
               method: ActionMethod.message,
               data: message,
-              id: "",
+              id: '',
             ),
           ),
         );
@@ -60,15 +60,17 @@ class ClashLib extends ClashHandlerInterface {
       if (message is SendPort) {
         sendPort = message;
       } else {
-        handleAction(
-          Action.fromJson(json.decode(message)),
+        handleResult(
+          ActionResult.fromJson(json.decode(
+            message,
+          )),
         );
       }
     });
 
     IsolateNameServer.registerPortWithName(
       receiverPort.sendPort,
-      'mainIsolate',
+      mainIsolate,
     );
     _isolate = await Isolate.spawn(_isolateEnter, receiverPort.sendPort);
   }
@@ -502,13 +504,6 @@ class ClashLibHandler {
     final stateChar = json.encode(state).toNativeUtf8().cast<Char>();
     clashFFI.setState(stateChar);
     malloc.free(stateChar);
-  }
-
-  String getCurrentProfileName() {
-    final currentProfileRaw = clashFFI.getCurrentProfileName();
-    final currentProfile = currentProfileRaw.cast<Utf8>().toDartString();
-    clashFFI.freeCString(currentProfileRaw);
-    return currentProfile;
   }
 
   AndroidVpnOptions getAndroidVpnOptions() {

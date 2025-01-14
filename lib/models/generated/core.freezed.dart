@@ -3785,6 +3785,7 @@ Action _$ActionFromJson(Map<String, dynamic> json) {
 mixin _$Action {
   ActionMethod get method => throw _privateConstructorUsedError;
   dynamic get data => throw _privateConstructorUsedError;
+  dynamic get defaultValue => throw _privateConstructorUsedError;
   String get id => throw _privateConstructorUsedError;
 
   /// Serializes this Action to a JSON map.
@@ -3801,7 +3802,8 @@ abstract class $ActionCopyWith<$Res> {
   factory $ActionCopyWith(Action value, $Res Function(Action) then) =
       _$ActionCopyWithImpl<$Res, Action>;
   @useResult
-  $Res call({ActionMethod method, dynamic data, String id});
+  $Res call(
+      {ActionMethod method, dynamic data, dynamic defaultValue, String id});
 }
 
 /// @nodoc
@@ -3821,6 +3823,7 @@ class _$ActionCopyWithImpl<$Res, $Val extends Action>
   $Res call({
     Object? method = null,
     Object? data = freezed,
+    Object? defaultValue = freezed,
     Object? id = null,
   }) {
     return _then(_value.copyWith(
@@ -3831,6 +3834,10 @@ class _$ActionCopyWithImpl<$Res, $Val extends Action>
       data: freezed == data
           ? _value.data
           : data // ignore: cast_nullable_to_non_nullable
+              as dynamic,
+      defaultValue: freezed == defaultValue
+          ? _value.defaultValue
+          : defaultValue // ignore: cast_nullable_to_non_nullable
               as dynamic,
       id: null == id
           ? _value.id
@@ -3847,7 +3854,8 @@ abstract class _$$ActionImplCopyWith<$Res> implements $ActionCopyWith<$Res> {
       __$$ActionImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({ActionMethod method, dynamic data, String id});
+  $Res call(
+      {ActionMethod method, dynamic data, dynamic defaultValue, String id});
 }
 
 /// @nodoc
@@ -3865,6 +3873,7 @@ class __$$ActionImplCopyWithImpl<$Res>
   $Res call({
     Object? method = null,
     Object? data = freezed,
+    Object? defaultValue = freezed,
     Object? id = null,
   }) {
     return _then(_$ActionImpl(
@@ -3875,6 +3884,10 @@ class __$$ActionImplCopyWithImpl<$Res>
       data: freezed == data
           ? _value.data
           : data // ignore: cast_nullable_to_non_nullable
+              as dynamic,
+      defaultValue: freezed == defaultValue
+          ? _value.defaultValue
+          : defaultValue // ignore: cast_nullable_to_non_nullable
               as dynamic,
       id: null == id
           ? _value.id
@@ -3888,7 +3901,10 @@ class __$$ActionImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$ActionImpl implements _Action {
   const _$ActionImpl(
-      {required this.method, required this.data, required this.id});
+      {required this.method,
+      required this.data,
+      required this.defaultValue,
+      required this.id});
 
   factory _$ActionImpl.fromJson(Map<String, dynamic> json) =>
       _$$ActionImplFromJson(json);
@@ -3898,11 +3914,13 @@ class _$ActionImpl implements _Action {
   @override
   final dynamic data;
   @override
+  final dynamic defaultValue;
+  @override
   final String id;
 
   @override
   String toString() {
-    return 'Action(method: $method, data: $data, id: $id)';
+    return 'Action(method: $method, data: $data, defaultValue: $defaultValue, id: $id)';
   }
 
   @override
@@ -3912,13 +3930,19 @@ class _$ActionImpl implements _Action {
             other is _$ActionImpl &&
             (identical(other.method, method) || other.method == method) &&
             const DeepCollectionEquality().equals(other.data, data) &&
+            const DeepCollectionEquality()
+                .equals(other.defaultValue, defaultValue) &&
             (identical(other.id, id) || other.id == id));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
-      runtimeType, method, const DeepCollectionEquality().hash(data), id);
+      runtimeType,
+      method,
+      const DeepCollectionEquality().hash(data),
+      const DeepCollectionEquality().hash(defaultValue),
+      id);
 
   /// Create a copy of Action
   /// with the given fields replaced by the non-null parameter values.
@@ -3940,6 +3964,7 @@ abstract class _Action implements Action {
   const factory _Action(
       {required final ActionMethod method,
       required final dynamic data,
+      required final dynamic defaultValue,
       required final String id}) = _$ActionImpl;
 
   factory _Action.fromJson(Map<String, dynamic> json) = _$ActionImpl.fromJson;
@@ -3949,6 +3974,8 @@ abstract class _Action implements Action {
   @override
   dynamic get data;
   @override
+  dynamic get defaultValue;
+  @override
   String get id;
 
   /// Create a copy of Action
@@ -3956,5 +3983,190 @@ abstract class _Action implements Action {
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ActionImplCopyWith<_$ActionImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+ActionResult _$ActionResultFromJson(Map<String, dynamic> json) {
+  return _ActionResult.fromJson(json);
+}
+
+/// @nodoc
+mixin _$ActionResult {
+  ActionMethod get method => throw _privateConstructorUsedError;
+  dynamic get data => throw _privateConstructorUsedError;
+  String? get id => throw _privateConstructorUsedError;
+
+  /// Serializes this ActionResult to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of ActionResult
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $ActionResultCopyWith<ActionResult> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $ActionResultCopyWith<$Res> {
+  factory $ActionResultCopyWith(
+          ActionResult value, $Res Function(ActionResult) then) =
+      _$ActionResultCopyWithImpl<$Res, ActionResult>;
+  @useResult
+  $Res call({ActionMethod method, dynamic data, String? id});
+}
+
+/// @nodoc
+class _$ActionResultCopyWithImpl<$Res, $Val extends ActionResult>
+    implements $ActionResultCopyWith<$Res> {
+  _$ActionResultCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of ActionResult
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? method = null,
+    Object? data = freezed,
+    Object? id = freezed,
+  }) {
+    return _then(_value.copyWith(
+      method: null == method
+          ? _value.method
+          : method // ignore: cast_nullable_to_non_nullable
+              as ActionMethod,
+      data: freezed == data
+          ? _value.data
+          : data // ignore: cast_nullable_to_non_nullable
+              as dynamic,
+      id: freezed == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$ActionResultImplCopyWith<$Res>
+    implements $ActionResultCopyWith<$Res> {
+  factory _$$ActionResultImplCopyWith(
+          _$ActionResultImpl value, $Res Function(_$ActionResultImpl) then) =
+      __$$ActionResultImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({ActionMethod method, dynamic data, String? id});
+}
+
+/// @nodoc
+class __$$ActionResultImplCopyWithImpl<$Res>
+    extends _$ActionResultCopyWithImpl<$Res, _$ActionResultImpl>
+    implements _$$ActionResultImplCopyWith<$Res> {
+  __$$ActionResultImplCopyWithImpl(
+      _$ActionResultImpl _value, $Res Function(_$ActionResultImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of ActionResult
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? method = null,
+    Object? data = freezed,
+    Object? id = freezed,
+  }) {
+    return _then(_$ActionResultImpl(
+      method: null == method
+          ? _value.method
+          : method // ignore: cast_nullable_to_non_nullable
+              as ActionMethod,
+      data: freezed == data
+          ? _value.data
+          : data // ignore: cast_nullable_to_non_nullable
+              as dynamic,
+      id: freezed == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$ActionResultImpl implements _ActionResult {
+  const _$ActionResultImpl({required this.method, required this.data, this.id});
+
+  factory _$ActionResultImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ActionResultImplFromJson(json);
+
+  @override
+  final ActionMethod method;
+  @override
+  final dynamic data;
+  @override
+  final String? id;
+
+  @override
+  String toString() {
+    return 'ActionResult(method: $method, data: $data, id: $id)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ActionResultImpl &&
+            (identical(other.method, method) || other.method == method) &&
+            const DeepCollectionEquality().equals(other.data, data) &&
+            (identical(other.id, id) || other.id == id));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType, method, const DeepCollectionEquality().hash(data), id);
+
+  /// Create a copy of ActionResult
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ActionResultImplCopyWith<_$ActionResultImpl> get copyWith =>
+      __$$ActionResultImplCopyWithImpl<_$ActionResultImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$ActionResultImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _ActionResult implements ActionResult {
+  const factory _ActionResult(
+      {required final ActionMethod method,
+      required final dynamic data,
+      final String? id}) = _$ActionResultImpl;
+
+  factory _ActionResult.fromJson(Map<String, dynamic> json) =
+      _$ActionResultImpl.fromJson;
+
+  @override
+  ActionMethod get method;
+  @override
+  dynamic get data;
+  @override
+  String? get id;
+
+  /// Create a copy of ActionResult
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$ActionResultImplCopyWith<_$ActionResultImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

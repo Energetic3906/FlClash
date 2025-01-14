@@ -320,6 +320,7 @@ Map<String, dynamic> _$$TunPropsImplToJson(_$TunPropsImpl instance) =>
 _$ActionImpl _$$ActionImplFromJson(Map<String, dynamic> json) => _$ActionImpl(
       method: $enumDecode(_$ActionMethodEnumMap, json['method']),
       data: json['data'],
+      defaultValue: json['defaultValue'],
       id: json['id'] as String,
     );
 
@@ -327,6 +328,7 @@ Map<String, dynamic> _$$ActionImplToJson(_$ActionImpl instance) =>
     <String, dynamic>{
       'method': _$ActionMethodEnumMap[instance.method]!,
       'data': instance.data,
+      'defaultValue': instance.defaultValue,
       'id': instance.id,
     };
 
@@ -368,3 +370,17 @@ const _$ActionMethodEnumMap = {
   ActionMethod.updateDns: 'updateDns',
   ActionMethod.getAndroidVpnOptions: 'getAndroidVpnOptions',
 };
+
+_$ActionResultImpl _$$ActionResultImplFromJson(Map<String, dynamic> json) =>
+    _$ActionResultImpl(
+      method: $enumDecode(_$ActionMethodEnumMap, json['method']),
+      data: json['data'],
+      id: json['id'] as String?,
+    );
+
+Map<String, dynamic> _$$ActionResultImplToJson(_$ActionResultImpl instance) =>
+    <String, dynamic>{
+      'method': _$ActionMethodEnumMap[instance.method]!,
+      'data': instance.data,
+      'id': instance.id,
+    };

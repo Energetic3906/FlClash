@@ -57,8 +57,8 @@ class ClashService extends ClashHandlerInterface {
           .transform(LineSplitter())
           .listen(
             (data) {
-              handleAction(
-                Action.fromJson(
+              handleResult(
+                ActionResult.fromJson(
                   json.decode(data.trim()),
                 ),
               );

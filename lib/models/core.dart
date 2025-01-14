@@ -264,9 +264,21 @@ class Action with _$Action {
   const factory Action({
     required ActionMethod method,
     required dynamic data,
+    @JsonKey(name: "default-value") required dynamic defaultValue,
     required String id,
   }) = _Action;
 
   factory Action.fromJson(Map<String, Object?> json) => _$ActionFromJson(json);
 }
 
+@freezed
+class ActionResult with _$ActionResult {
+  const factory ActionResult({
+    required ActionMethod method,
+    required dynamic data,
+    String? id,
+  }) = _ActionResult;
+
+  factory ActionResult.fromJson(Map<String, Object?> json) =>
+      _$ActionResultFromJson(json);
+}

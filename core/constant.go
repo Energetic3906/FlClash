@@ -74,15 +74,17 @@ const (
 	stopLogMethod                  Method = "stopLog"
 	startListenerMethod            Method = "startListener"
 	stopListenerMethod             Method = "stopListener"
+	startTunMethod                 Method = "startTun"
+	stopTunMethod                  Method = "stopTun"
+	updateDnsMethod                Method = "updateDns"
+	setProcessMapMethod            Method = "setProcessMap"
+	setFdMapMethod                 Method = "setFdMap"
+	setStateMethod                 Method = "setState"
+	getAndroidVpnOptionsMethod     Method = "getAndroidVpnOptions"
+	getRunTimeMethod               Method = "getRunTime"
 )
 
 type Method string
-
-type Action struct {
-	Id     string      `json:"id"`
-	Method Method      `json:"method"`
-	Data   interface{} `json:"data"`
-}
 
 type MessageType string
 

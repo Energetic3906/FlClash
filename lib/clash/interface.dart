@@ -69,10 +69,10 @@ mixin ClashInterface {
 abstract class ClashHandlerInterface with ClashInterface {
   Map<String, Completer> callbackCompleterMap = {};
 
-  handleAction(Action action) {
-    final completer = callbackCompleterMap[action.id];
+  handleResult(ActionResult result) {
+    final completer = callbackCompleterMap[result.id];
     try {
-      switch (action.method) {
+      switch (result.method) {
         case ActionMethod.initClash:
         case ActionMethod.shutdown:
         case ActionMethod.getIsInit:
@@ -81,7 +81,7 @@ abstract class ClashHandlerInterface with ClashInterface {
         case ActionMethod.closeConnections:
         case ActionMethod.closeConnection:
         case ActionMethod.stopListener:
-          completer?.complete(action.data as bool);
+          completer?.complete(result.data as bool);
           return;
         case ActionMethod.changeProxy:
         case ActionMethod.getProxies:
@@ -98,21 +98,21 @@ abstract class ClashHandlerInterface with ClashInterface {
         case ActionMethod.sideLoadExternalProvider:
         case ActionMethod.getCountryCode:
         case ActionMethod.getMemory:
-          completer?.complete(action.data as String);
+          completer?.complete(result.data as String);
           return;
         case ActionMethod.message:
-          clashMessage.controller.add(action.data as String);
+          clashMessage.controller.add(result.data as String);
           completer?.complete(true);
           return;
         case ActionMethod.forceGc:
         case ActionMethod.startLog:
         case ActionMethod.stopLog:
         default:
-          completer?.complete(true);
+          completer?.complete(result.data);
           return;
       }
     } catch (_) {
-      debugPrint(action.id);
+      debugPrint(result.id);
     }
   }
 
@@ -132,12 +132,22 @@ abstract class ClashHandlerInterface with ClashInterface {
 
     callbackCompleterMap[id] = Completer<T>();
 
+    var defaultValue;
+
+    if (T == String) {
+      defaultValue = "";
+    }
+    if (T == bool) {
+      defaultValue = false;
+    }
+
     sendMessage(
       json.encode(
         Action(
           id: id,
           method: method,
           data: data,
+          defaultValue: defaultValue,
         ),
       ),
     );
@@ -149,13 +159,7 @@ abstract class ClashHandlerInterface with ClashInterface {
       },
       onTimeout: onTimeout ??
           () {
-            if (T == String) {
-              return "" as T;
-            }
-            if (T == bool) {
-              return false as T;
-            }
-            return null as T;
+            return defaultValue;
           },
       functionName: id,
     );

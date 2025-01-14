@@ -53,3 +53,7 @@ func startServer(arg string) {
 		})
 	}
 }
+
+func nextHandle(action *Action, send func([]byte)) bool {
+	return false
+}
