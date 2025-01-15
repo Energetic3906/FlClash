@@ -78,10 +78,7 @@ class Vpn {
     receiver = ReceivePort();
     receiver!.listen(_handleServiceMessage);
     await clashLib?.startTun(
-      StartTunParams(
-        fd: fd,
-        port: receiver!.sendPort.nativePort,
-      ),
+      fd,
     );
   }
 

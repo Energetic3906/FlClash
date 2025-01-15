@@ -117,16 +117,6 @@ class UpdateGeoDataParams with _$UpdateGeoDataParams {
       _$UpdateGeoDataParamsFromJson(json);
 }
 
-@freezed
-class StartTunParams with _$StartTunParams {
-  const factory StartTunParams({
-    required int fd,
-    required int port,
-  }) = _StartTunParams;
-
-  factory StartTunParams.fromJson(Map<String, Object?> json) =>
-      _$StartTunParamsFromJson(json);
-}
 
 @freezed
 class AppMessage with _$AppMessage {

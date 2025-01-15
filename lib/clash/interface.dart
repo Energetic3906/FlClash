@@ -66,10 +66,33 @@ mixin ClashInterface {
   FutureOr<bool> closeConnections();
 }
 
+mixin AndroidClashInterface {
+  Future<bool> setFdMap(int fd);
+
+  Future<bool> setProcessMap(ProcessMapItem item);
+
+  Future<bool> setState(CoreState state);
+
+  Future<bool> stopTun();
+
+  Future<bool> updateDns(String value);
+
+  Future<DateTime?> startTun(int fd);
+
+  Future<AndroidVpnOptions?> getAndroidVpnOptions();
+
+  Future<String> getCurrentProfileName();
+
+  Future<DateTime?> getRunTime();
+}
+
 abstract class ClashHandlerInterface with ClashInterface {
   Map<String, Completer> callbackCompleterMap = {};
 
-  handleResult(ActionResult result) {
+  Future<bool> nextHandleResult(ActionResult result, Completer? completer) =>
+      Future.value(false);
+
+  handleResult(ActionResult result) async {
     final completer = callbackCompleterMap[result.id];
     try {
       switch (result.method) {
@@ -108,8 +131,11 @@ abstract class ClashHandlerInterface with ClashInterface {
         case ActionMethod.startLog:
         case ActionMethod.stopLog:
         default:
+          final isHandled = await nextHandleResult(result, completer);
+          if (isHandled) {
+            return;
+          }
           completer?.complete(result.data);
-          return;
       }
     } catch (_) {
       debugPrint(result.id);
@@ -132,7 +158,7 @@ abstract class ClashHandlerInterface with ClashInterface {
 
     callbackCompleterMap[id] = Completer<T>();
 
-    var defaultValue;
+    dynamic defaultValue;
 
     if (T == String) {
       defaultValue = "";
@@ -374,6 +400,13 @@ abstract class ClashHandlerInterface with ClashInterface {
   FutureOr<String> getMemory() {
     return invoke<String>(
       method: ActionMethod.getMemory,
+    );
+  }
+
+  @override
+  Future<bool> setFdMap(int fd) {
+    return invoke<bool>(
+      method: ActionMethod.setFdMap,
     );
   }
 }

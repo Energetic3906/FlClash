@@ -141,19 +141,6 @@ Map<String, dynamic> _$$UpdateGeoDataParamsImplToJson(
       'geo-name': instance.geoName,
     };
 
-_$StartTunParamsImpl _$$StartTunParamsImplFromJson(Map<String, dynamic> json) =>
-    _$StartTunParamsImpl(
-      fd: (json['fd'] as num).toInt(),
-      port: (json['port'] as num).toInt(),
-    );
-
-Map<String, dynamic> _$$StartTunParamsImplToJson(
-        _$StartTunParamsImpl instance) =>
-    <String, dynamic>{
-      'fd': instance.fd,
-      'port': instance.port,
-    };
-
 _$AppMessageImpl _$$AppMessageImplFromJson(Map<String, dynamic> json) =>
     _$AppMessageImpl(
       type: $enumDecode(_$AppMessageTypeEnumMap, json['type']),
@@ -320,7 +307,7 @@ Map<String, dynamic> _$$TunPropsImplToJson(_$TunPropsImpl instance) =>
 _$ActionImpl _$$ActionImplFromJson(Map<String, dynamic> json) => _$ActionImpl(
       method: $enumDecode(_$ActionMethodEnumMap, json['method']),
       data: json['data'],
-      defaultValue: json['defaultValue'],
+      defaultValue: json['default-value'],
       id: json['id'] as String,
     );
 
@@ -328,7 +315,7 @@ Map<String, dynamic> _$$ActionImplToJson(_$ActionImpl instance) =>
     <String, dynamic>{
       'method': _$ActionMethodEnumMap[instance.method]!,
       'data': instance.data,
-      'defaultValue': instance.defaultValue,
+      'default-value': instance.defaultValue,
       'id': instance.id,
     };
 
@@ -363,12 +350,12 @@ const _$ActionMethodEnumMap = {
   ActionMethod.setFdMap: 'setFdMap',
   ActionMethod.setProcessMap: 'setProcessMap',
   ActionMethod.setState: 'setState',
-  ActionMethod.getCurrentProfileName: 'getCurrentProfileName',
   ActionMethod.startTun: 'startTun',
   ActionMethod.stopTun: 'stopTun',
   ActionMethod.getRunTime: 'getRunTime',
   ActionMethod.updateDns: 'updateDns',
   ActionMethod.getAndroidVpnOptions: 'getAndroidVpnOptions',
+  ActionMethod.getCurrentProfileName: 'getCurrentProfileName',
 };
 
 _$ActionResultImpl _$$ActionResultImplFromJson(Map<String, dynamic> json) =>

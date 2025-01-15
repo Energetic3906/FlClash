@@ -246,12 +246,12 @@ enum ActionMethod {
   setFdMap,
   setProcessMap,
   setState,
-  getCurrentProfileName,
   startTun,
   stopTun,
   getRunTime,
   updateDns,
   getAndroidVpnOptions,
+  getCurrentProfileName,
 }
 
 enum AuthorizeCode { none, success, error }

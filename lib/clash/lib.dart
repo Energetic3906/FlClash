@@ -14,7 +14,7 @@ import 'package:fl_clash/state.dart';
 import 'generated/clash_ffi.dart';
 import 'interface.dart';
 
-class ClashLib extends ClashHandlerInterface {
+class ClashLib extends ClashHandlerInterface with AndroidClashInterface {
   static ClashLib? _instance;
   Isolate? _isolate;
   SendPort? sendPort;
@@ -53,6 +53,27 @@ class ClashLib extends ClashHandlerInterface {
       });
     }
     sendPort.send(innerReceiverPort.sendPort);
+  }
+
+  @override
+  Future<bool> nextHandleResult(result, completer) async {
+    switch (result.method) {
+      case ActionMethod.setFdMap:
+      case ActionMethod.setProcessMap:
+      case ActionMethod.setState:
+      case ActionMethod.stopTun:
+      case ActionMethod.updateDns:
+        completer?.complete(result.data as bool);
+        return true;
+      case ActionMethod.getRunTime:
+      case ActionMethod.startTun:
+      case ActionMethod.getAndroidVpnOptions:
+      case ActionMethod.getCurrentProfileName:
+        completer?.complete(result.data as String);
+        return true;
+      default:
+        return false;
+    }
   }
 
   _initClashLibHandler() async {
@@ -97,6 +118,7 @@ class ClashLib extends ClashHandlerInterface {
     sendPort?.send(message);
   }
 
+  @override
   Future<bool> setFdMap(int fd) {
     return invoke<bool>(
       method: ActionMethod.setFdMap,
@@ -104,13 +126,15 @@ class ClashLib extends ClashHandlerInterface {
     );
   }
 
-  Future<bool> setProcessMap(ProcessMapItem item) {
+  @override
+  Future<bool> setProcessMap(item) {
     return invoke<bool>(
       method: ActionMethod.setProcessMap,
       data: item,
     );
   }
 
+  @override
   Future<bool> setState(CoreState state) {
     return invoke<bool>(
       method: ActionMethod.setState,
@@ -118,31 +142,38 @@ class ClashLib extends ClashHandlerInterface {
     );
   }
 
-  Future<String> getCurrentProfileName() {
-    return invoke<String>(
-      method: ActionMethod.getCurrentProfileName,
-    );
-  }
-
-  Future<bool> startTun(StartTunParams params) {
-    return invoke<bool>(
+  @override
+  Future<DateTime?> startTun(int fd) async {
+    final res = await invoke<String>(
       method: ActionMethod.startTun,
-      data: params,
+      data: fd,
     );
+
+    if (res.isEmpty) {
+      return null;
+    }
+    return DateTime.fromMillisecondsSinceEpoch(int.parse(res));
   }
 
+  @override
   Future<bool> stopTun() {
     return invoke<bool>(
       method: ActionMethod.stopTun,
     );
   }
 
-  Future<AndroidVpnOptions> getAndroidVpnOptions() {
-    return invoke<AndroidVpnOptions>(
+  @override
+  Future<AndroidVpnOptions?> getAndroidVpnOptions() async {
+    final res = await invoke<String>(
       method: ActionMethod.getAndroidVpnOptions,
     );
+    if (res.isEmpty) {
+      return null;
+    }
+    return AndroidVpnOptions.fromJson(json.decode(res));
   }
 
+  @override
   Future<bool> updateDns(String dns) {
     return invoke<bool>(
       method: ActionMethod.updateDns,
@@ -150,6 +181,7 @@ class ClashLib extends ClashHandlerInterface {
     );
   }
 
+  @override
   Future<DateTime?> getRunTime() async {
     final runTimeString = await invoke<String>(
       method: ActionMethod.getRunTime,
@@ -158,6 +190,13 @@ class ClashLib extends ClashHandlerInterface {
       return null;
     }
     return DateTime.fromMillisecondsSinceEpoch(int.parse(runTimeString));
+  }
+
+  @override
+  Future<String> getCurrentProfileName() {
+    return invoke<String>(
+      method: ActionMethod.getCurrentProfileName,
+    );
   }
 }
 
@@ -204,324 +243,6 @@ class ClashLibHandler {
     clashFFI.initMessage(
       receivePort.sendPort.nativePort,
     );
-  }
-
-  bool init(String homeDir) {
-    final homeDirChar = homeDir.toNativeUtf8().cast<Char>();
-    final isInit = clashFFI.initClash(homeDirChar) == 1;
-    malloc.free(homeDirChar);
-    return isInit;
-  }
-
-  shutdown() async {
-    clashFFI.shutdownClash();
-    lib.close();
-  }
-
-  bool get isInit => clashFFI.getIsInit() == 1;
-
-  Future<String> validateConfig(String data) {
-    final completer = Completer<String>();
-    final receiver = ReceivePort();
-    receiver.listen((message) {
-      if (!completer.isCompleted) {
-        completer.complete(message);
-        receiver.close();
-      }
-    });
-    final dataChar = data.toNativeUtf8().cast<Char>();
-    clashFFI.validateConfig(
-      dataChar,
-      receiver.sendPort.nativePort,
-    );
-    malloc.free(dataChar);
-    return completer.future;
-  }
-
-  Future<String> updateConfig(String params) {
-    final completer = Completer<String>();
-    final receiver = ReceivePort();
-    receiver.listen((message) {
-      if (!completer.isCompleted) {
-        completer.complete(message);
-        receiver.close();
-      }
-    });
-    final paramsChar = params.toNativeUtf8().cast<Char>();
-    clashFFI.updateConfig(
-      paramsChar,
-      receiver.sendPort.nativePort,
-    );
-    malloc.free(paramsChar);
-    return completer.future;
-  }
-
-  String getProxies() {
-    final proxiesRaw = clashFFI.getProxies();
-    final proxiesRawString = proxiesRaw.cast<Utf8>().toDartString();
-    clashFFI.freeCString(proxiesRaw);
-    return proxiesRawString;
-  }
-
-  String getExternalProviders() {
-    final externalProvidersRaw = clashFFI.getExternalProviders();
-    final externalProvidersRawString =
-        externalProvidersRaw.cast<Utf8>().toDartString();
-    clashFFI.freeCString(externalProvidersRaw);
-    return externalProvidersRawString;
-  }
-
-  String getExternalProvider(String externalProviderName) {
-    final externalProviderNameChar =
-        externalProviderName.toNativeUtf8().cast<Char>();
-    final externalProviderRaw =
-        clashFFI.getExternalProvider(externalProviderNameChar);
-    malloc.free(externalProviderNameChar);
-    final externalProviderRawString =
-        externalProviderRaw.cast<Utf8>().toDartString();
-    clashFFI.freeCString(externalProviderRaw);
-    return externalProviderRawString;
-  }
-
-  Future<String> updateGeoData(UpdateGeoDataParams params) {
-    final completer = Completer<String>();
-    final receiver = ReceivePort();
-    receiver.listen((message) {
-      if (!completer.isCompleted) {
-        completer.complete(message);
-        receiver.close();
-      }
-    });
-    final geoTypeChar = params.geoType.toNativeUtf8().cast<Char>();
-    final geoNameChar = params.geoName.toNativeUtf8().cast<Char>();
-    clashFFI.updateGeoData(
-      geoTypeChar,
-      geoNameChar,
-      receiver.sendPort.nativePort,
-    );
-    malloc.free(geoTypeChar);
-    malloc.free(geoNameChar);
-    return completer.future;
-  }
-
-  Future<String> sideLoadExternalProvider({
-    required String providerName,
-    required String data,
-  }) {
-    final completer = Completer<String>();
-    final receiver = ReceivePort();
-    receiver.listen((message) {
-      if (!completer.isCompleted) {
-        completer.complete(message);
-        receiver.close();
-      }
-    });
-    final providerNameChar = providerName.toNativeUtf8().cast<Char>();
-    final dataChar = data.toNativeUtf8().cast<Char>();
-    clashFFI.sideLoadExternalProvider(
-      providerNameChar,
-      dataChar,
-      receiver.sendPort.nativePort,
-    );
-    malloc.free(providerNameChar);
-    malloc.free(dataChar);
-    return completer.future;
-  }
-
-  Future<String> updateExternalProvider(String providerName) {
-    final completer = Completer<String>();
-    final receiver = ReceivePort();
-    receiver.listen((message) {
-      if (!completer.isCompleted) {
-        completer.complete(message);
-        receiver.close();
-      }
-    });
-    final providerNameChar = providerName.toNativeUtf8().cast<Char>();
-    clashFFI.updateExternalProvider(
-      providerNameChar,
-      receiver.sendPort.nativePort,
-    );
-    malloc.free(providerNameChar);
-    return completer.future;
-  }
-
-  Future<String> changeProxy(ChangeProxyParams changeProxyParams) {
-    final completer = Completer<String>();
-    final receiver = ReceivePort();
-    receiver.listen((message) {
-      if (!completer.isCompleted) {
-        completer.complete(message);
-        receiver.close();
-      }
-    });
-    final params = json.encode(changeProxyParams);
-    final paramsChar = params.toNativeUtf8().cast<Char>();
-    clashFFI.changeProxy(
-      paramsChar,
-      receiver.sendPort.nativePort,
-    );
-    malloc.free(paramsChar);
-    return completer.future;
-  }
-
-  String getConnections() {
-    final connectionsDataRaw = clashFFI.getConnections();
-    final connectionsString = connectionsDataRaw.cast<Utf8>().toDartString();
-    clashFFI.freeCString(connectionsDataRaw);
-    return connectionsString;
-  }
-
-  closeConnection(String id) {
-    final idChar = id.toNativeUtf8().cast<Char>();
-    clashFFI.closeConnection(idChar);
-    malloc.free(idChar);
-    return true;
-  }
-
-  closeConnections() {
-    clashFFI.closeConnections();
-    return true;
-  }
-
-  startListener() async {
-    clashFFI.startListener();
-    return true;
-  }
-
-  stopListener() async {
-    clashFFI.stopListener();
-    return true;
-  }
-
-  Future<String> asyncTestDelay(String proxyName) {
-    final delayParams = {
-      "proxy-name": proxyName,
-      "timeout": httpTimeoutDuration.inMilliseconds,
-    };
-    final completer = Completer<String>();
-    final receiver = ReceivePort();
-    receiver.listen((message) {
-      if (!completer.isCompleted) {
-        completer.complete(message);
-        receiver.close();
-      }
-    });
-    final delayParamsChar =
-        json.encode(delayParams).toNativeUtf8().cast<Char>();
-    clashFFI.asyncTestDelay(
-      delayParamsChar,
-      receiver.sendPort.nativePort,
-    );
-    malloc.free(delayParamsChar);
-    return completer.future;
-  }
-
-  String getTraffic(bool value) {
-    final trafficRaw = clashFFI.getTraffic(value ? 1 : 0);
-    final trafficString = trafficRaw.cast<Utf8>().toDartString();
-    clashFFI.freeCString(trafficRaw);
-    return trafficString;
-  }
-
-  String getTotalTraffic(bool value) {
-    final trafficRaw = clashFFI.getTotalTraffic(value ? 1 : 0);
-    clashFFI.freeCString(trafficRaw);
-    return trafficRaw.cast<Utf8>().toDartString();
-  }
-
-  void resetTraffic() {
-    clashFFI.resetTraffic();
-  }
-
-  void startLog() {
-    clashFFI.startLog();
-  }
-
-  stopLog() {
-    clashFFI.stopLog();
-  }
-
-  forceGc() {
-    clashFFI.forceGc();
-  }
-
-  FutureOr<String> getCountryCode(String ip) {
-    final completer = Completer<String>();
-    final receiver = ReceivePort();
-    receiver.listen((message) {
-      if (!completer.isCompleted) {
-        completer.complete(message);
-        receiver.close();
-      }
-    });
-    final ipChar = ip.toNativeUtf8().cast<Char>();
-    clashFFI.getCountryCode(
-      ipChar,
-      receiver.sendPort.nativePort,
-    );
-    malloc.free(ipChar);
-    return completer.future;
-  }
-
-  FutureOr<String> getMemory() {
-    final completer = Completer<String>();
-    final receiver = ReceivePort();
-    receiver.listen((message) {
-      if (!completer.isCompleted) {
-        completer.complete(message);
-        receiver.close();
-      }
-    });
-    clashFFI.getMemory(receiver.sendPort.nativePort);
-    return completer.future;
-  }
-
-  /// Android
-  startTun(StartTunParams params) {
-    if (!Platform.isAndroid) return;
-    clashFFI.startTUN(params.fd, params.port);
-  }
-
-  stopTun() {
-    clashFFI.stopTun();
-  }
-
-  updateDns(String dns) {
-    final dnsChar = dns.toNativeUtf8().cast<Char>();
-    clashFFI.updateDns(dnsChar);
-    malloc.free(dnsChar);
-  }
-
-  setProcessMap(ProcessMapItem processMapItem) {
-    final processMapItemChar =
-        json.encode(processMapItem).toNativeUtf8().cast<Char>();
-    clashFFI.setProcessMap(processMapItemChar);
-    malloc.free(processMapItemChar);
-  }
-
-  setState(CoreState state) {
-    final stateChar = json.encode(state).toNativeUtf8().cast<Char>();
-    clashFFI.setState(stateChar);
-    malloc.free(stateChar);
-  }
-
-  AndroidVpnOptions getAndroidVpnOptions() {
-    final vpnOptionsRaw = clashFFI.getAndroidVpnOptions();
-    final vpnOptions = json.decode(vpnOptionsRaw.cast<Utf8>().toDartString());
-    clashFFI.freeCString(vpnOptionsRaw);
-    return AndroidVpnOptions.fromJson(vpnOptions);
-  }
-
-  setFdMap(int fd) {
-    clashFFI.setFdMap(fd);
-  }
-
-  String? getRunTime() {
-    final runTimeRaw = clashFFI.getRunTime();
-    final runTimeString = runTimeRaw.cast<Utf8>().toDartString();
-    clashFFI.freeCString(runTimeRaw);
-    return runTimeString;
   }
 }
 

@@ -228,6 +228,13 @@ func handleUpdateDns(value string) {
 	}()
 }
 
+func handleGetCurrentProfileName() string {
+	if state.CurrentState == nil {
+		return ""
+	}
+	return state.CurrentState.CurrentProfileName
+}
+
 func nextHandle(action *Action, send func([]byte)) bool {
 	switch action.Method {
 	case startTunMethod:
@@ -263,6 +270,9 @@ func nextHandle(action *Action, send func([]byte)) bool {
 		return true
 	case getRunTimeMethod:
 		send(action.wrapMessage(handleGetRunTime()))
+		return true
+	case getCurrentProfileNameMethod:
+		send(action.wrapMessage(handleGetCurrentProfileName()))
 		return true
 	}
 	return false
