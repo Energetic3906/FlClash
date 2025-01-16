@@ -12,8 +12,6 @@ import 'package:flutter/services.dart';
 class Vpn {
   static Vpn? _instance;
   late MethodChannel methodChannel;
-  ReceivePort? receiver;
-  ServiceMessageListener? _serviceMessageHandler;
 
   Vpn._internal() {
     methodChannel = const MethodChannel("vpn");
@@ -71,33 +69,9 @@ class Vpn {
   }
 
   onStarted(int fd) async {
-    if (receiver != null) {
-      receiver!.close();
-      receiver == null;
-    }
-    receiver = ReceivePort();
-    receiver!.listen(_handleServiceMessage);
     await clashLib?.startTun(
       fd,
     );
-  }
-
-  setServiceMessageHandler(ServiceMessageListener serviceMessageListener) {
-    _serviceMessageHandler = serviceMessageListener;
-  }
-
-  _handleServiceMessage(dynamic message) {
-    final m = ServiceMessage.fromJson(json.decode(message));
-    switch (m.type) {
-      case ServiceMessageType.protect:
-        _serviceMessageHandler?.onProtect(Fd.fromJson(m.data));
-      case ServiceMessageType.process:
-        _serviceMessageHandler?.onProcess(ProcessData.fromJson(m.data));
-      case ServiceMessageType.started:
-        _serviceMessageHandler?.onStarted(m.data);
-      case ServiceMessageType.loaded:
-        _serviceMessageHandler?.onLoaded(m.data);
-    }
   }
 }
 

@@ -12,6 +12,7 @@ class ClashMessage {
   ClashMessage._() {
     controller.stream.listen(
       (message) {
+        print(message);
         final m = AppMessage.fromJson(json.decode(message));
         for (final AppMessageListener listener in _listeners) {
           switch (m.type) {

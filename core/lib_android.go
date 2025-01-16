@@ -102,6 +102,9 @@ func handleStopTun() {
 }
 
 func handleGetRunTime() string {
+	if runTime == nil {
+		return ""
+	}
 	return strconv.FormatInt(runTime.UnixMilli(), 10)
 }
 

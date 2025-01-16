@@ -10,6 +10,7 @@ import 'package:fl_clash/common/constant.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/state.dart';
+import 'package:flutter/cupertino.dart';
 
 import 'generated/clash_ffi.dart';
 import 'interface.dart';
@@ -24,35 +25,49 @@ class ClashLib extends ClashHandlerInterface with AndroidClashInterface {
     _initClashLibHandler();
   }
 
+  _initClashLibHandler() async {
+    receiverPort.listen((message) {
+      if (message is SendPort) {
+        sendPort = message;
+      } else {
+        handleResult(
+          ActionResult.fromJson(json.decode(
+            message,
+          )),
+        );
+      }
+    });
+
+    _isolate = await Isolate.spawn((sendPort) {
+      final clashLibHandler = ClashLibHandler();
+      final innerReceiverPort = ReceivePort();
+      innerReceiverPort.listen((message) async {
+        final res = await clashLibHandler.invokeAction(message);
+        final action = ActionResult.fromJson(json.decode(res));
+        sendPort.send(json.encode(action));
+      });
+      if (!globalState.isVpnService) {
+        final messageReceiverPort = ReceivePort();
+        clashLibHandler.initMessage(messageReceiverPort);
+        messageReceiverPort.listen((message) {
+          sendPort.send(
+            json.encode(
+              ActionResult(
+                method: ActionMethod.message,
+                data: message,
+                id: '',
+              ),
+            ),
+          );
+        });
+      }
+      sendPort.send(innerReceiverPort.sendPort);
+    }, receiverPort.sendPort);
+  }
+
   factory ClashLib() {
     _instance ??= ClashLib._internal();
     return _instance!;
-  }
-
-  _isolateEnter(SendPort sendPort) {
-    final clashLibHandler = ClashLibHandler();
-    final innerReceiverPort = ReceivePort();
-    innerReceiverPort.listen((message) async {
-      final res = await clashLibHandler.invokeAction(message);
-      final action = Action.fromJson(json.decode(res));
-      sendPort.send(json.encode(action));
-    });
-    if (!globalState.isVpnService) {
-      final messageReceiverPort = ReceivePort();
-      clashLibHandler.initMessage(messageReceiverPort);
-      messageReceiverPort.listen((message) {
-        sendPort.send(
-          json.encode(
-            ActionResult(
-              method: ActionMethod.message,
-              data: message,
-              id: '',
-            ),
-          ),
-        );
-      });
-    }
-    sendPort.send(innerReceiverPort.sendPort);
   }
 
   @override
@@ -76,26 +91,6 @@ class ClashLib extends ClashHandlerInterface with AndroidClashInterface {
     }
   }
 
-  _initClashLibHandler() async {
-    receiverPort.listen((message) {
-      if (message is SendPort) {
-        sendPort = message;
-      } else {
-        handleResult(
-          ActionResult.fromJson(json.decode(
-            message,
-          )),
-        );
-      }
-    });
-
-    IsolateNameServer.registerPortWithName(
-      receiverPort.sendPort,
-      mainIsolate,
-    );
-    _isolate = await Isolate.spawn(_isolateEnter, receiverPort.sendPort);
-  }
-
   @override
   destroy() {
     _isolate?.kill();
@@ -108,9 +103,10 @@ class ClashLib extends ClashHandlerInterface with AndroidClashInterface {
   }
 
   @override
-  FutureOr<void> shutdown() {
-    super.shutdown();
+  Future<bool> shutdown() async {
+    await super.shutdown();
     destroy();
+    return true;
   }
 
   @override
@@ -138,7 +134,7 @@ class ClashLib extends ClashHandlerInterface with AndroidClashInterface {
   Future<bool> setState(CoreState state) {
     return invoke<bool>(
       method: ActionMethod.setState,
-      data: state,
+      data: json.encode(state),
     );
   }
 

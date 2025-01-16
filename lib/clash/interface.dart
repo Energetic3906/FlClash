@@ -10,13 +10,13 @@ import 'package:fl_clash/models/models.dart';
 import 'package:flutter/material.dart' hide Action;
 
 mixin ClashInterface {
-  FutureOr<bool> init(String homeDir);
+  Future<bool> init(String homeDir);
 
-  FutureOr<void> shutdown();
+  Future<bool> shutdown();
 
-  FutureOr<bool> get isInit;
+  Future<bool> get isInit;
 
-  forceGc();
+  Future<bool> forceGc();
 
   FutureOr<String> validateConfig(String data);
 
@@ -127,9 +127,6 @@ abstract class ClashHandlerInterface with ClashInterface {
           clashMessage.controller.add(result.data as String);
           completer?.complete(true);
           return;
-        case ActionMethod.forceGc:
-        case ActionMethod.startLog:
-        case ActionMethod.stopLog:
         default:
           final isHandled = await nextHandleResult(result, completer);
           if (isHandled) {
@@ -201,7 +198,7 @@ abstract class ClashHandlerInterface with ClashInterface {
 
   @override
   shutdown() async {
-    await invoke<bool>(
+    return await invoke<bool>(
       method: ActionMethod.shutdown,
     );
   }
@@ -214,8 +211,8 @@ abstract class ClashHandlerInterface with ClashInterface {
   }
 
   @override
-  forceGc() {
-    invoke(
+  Future<bool> forceGc() {
+    return invoke<bool>(
       method: ActionMethod.forceGc,
     );
   }
@@ -400,13 +397,6 @@ abstract class ClashHandlerInterface with ClashInterface {
   FutureOr<String> getMemory() {
     return invoke<String>(
       method: ActionMethod.getMemory,
-    );
-  }
-
-  @override
-  Future<bool> setFdMap(int fd) {
-    return invoke<bool>(
-      method: ActionMethod.setFdMap,
     );
   }
 }

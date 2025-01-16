@@ -26,5 +26,4 @@ class Service {
   }
 }
 
-final service =
-    Platform.isAndroid ? Service() : null;
+final service = Platform.isAndroid ? Service() : null;

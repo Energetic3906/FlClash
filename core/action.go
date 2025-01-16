@@ -104,7 +104,7 @@ func handleAction(action *Action, send func([]byte)) {
 		var params = map[string]string{}
 		err := json.Unmarshal([]byte(paramsString), &params)
 		if err != nil {
-			action.wrapMessage(err.Error())
+			send(action.wrapMessage(err.Error()))
 			return
 		}
 		geoType := params["geo-type"]

@@ -40,7 +40,7 @@ func invokeAction(paramsChar *C.char, port C.longlong) {
 		bridge.SendToPort(i, err.Error())
 		return
 	}
-	handleAction(action, func(bytes []byte) {
+	go handleAction(action, func(bytes []byte) {
 		bridge.SendToPort(i, string(bytes))
 	})
 }

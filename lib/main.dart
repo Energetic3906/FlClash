@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:fl_clash/clash/clash.dart';
 import 'package:fl_clash/plugins/app.dart';
 import 'package:fl_clash/plugins/tile.dart';
-import 'package:fl_clash/plugins/vpn.dart';
 import 'package:fl_clash/state.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -89,7 +88,6 @@ Future<void> vpnService() async {
       .then(
     (_) async {
       await globalState.handleStart();
-
       tile?.addListener(
         TileListenerWithVpn(
           onStop: () async {
@@ -108,64 +106,6 @@ Future<void> vpnService() async {
       ];
     },
   );
-
-  vpn?.setServiceMessageHandler(
-    ServiceMessageHandler(
-      onProtect: (Fd fd) async {
-        await vpn?.setProtect(fd.value);
-        clashLib?.setFdMap(fd.id);
-      },
-      onProcess: (ProcessData process) async {
-        final packageName = await vpn?.resolverProcess(process);
-        clashLib?.setProcessMap(
-          ProcessMapItem(
-            id: process.id,
-            value: packageName ?? "",
-          ),
-        );
-      },
-      onLoaded: (String groupName) {
-        final currentSelectedMap = config.currentSelectedMap;
-        final proxyName = currentSelectedMap[groupName];
-        if (proxyName == null) return;
-        globalState.changeProxy(
-          config: config,
-          groupName: groupName,
-          proxyName: proxyName,
-        );
-      },
-    ),
-  );
-}
-
-@immutable
-class ServiceMessageHandler with ServiceMessageListener {
-  final Function(Fd fd) _onProtect;
-  final Function(ProcessData process) _onProcess;
-  final Function(String providerName) _onLoaded;
-
-  const ServiceMessageHandler({
-    required Function(Fd fd) onProtect,
-    required Function(ProcessData process) onProcess,
-    required Function(String providerName) onLoaded,
-  })  : _onProtect = onProtect,
-        _onProcess = onProcess,
-        _onLoaded = onLoaded;
-
-  @override
-  onProtect(Fd fd) {
-    _onProtect(fd);
-  }
-
-  @override
-  onProcess(ProcessData process) {
-    _onProcess(process);
-  }
-
-  @override
-  onLoaded(String providerName) {
-    _onLoaded(providerName);
-  }
 }
 
 @immutable

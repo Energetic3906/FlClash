@@ -119,13 +119,9 @@ class GlobalState {
 
   handleStart() async {
     await clashCore.startListener();
-    if (globalState.isVpnService) {
-      await vpn?.startVpn();
-      startListenUpdate();
-      return;
-    }
+    await vpn?.startVpn();
+    startListenUpdate();
     startTime ??= DateTime.now();
-    await service?.init();
     startListenUpdate();
   }
 
@@ -154,7 +150,6 @@ class GlobalState {
     startTime = null;
     await clashCore.stopListener();
     clashLib?.stopTun();
-    await service?.destroy();
     stopListenUpdate();
   }
 

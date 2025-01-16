@@ -124,13 +124,14 @@ class ClashService extends ClashHandlerInterface {
 
   @override
   shutdown() async {
-    super.shutdown();
+    await super.shutdown();
     if (Platform.isWindows) {
       await request.stopCoreByHelper();
     }
     await _destroySocket();
     process?.kill();
     process = null;
+    return true;
   }
 }
 
