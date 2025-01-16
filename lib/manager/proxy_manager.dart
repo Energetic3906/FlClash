@@ -9,6 +9,8 @@ class ProxyManager extends StatelessWidget {
   const ProxyManager({super.key, required this.child});
 
   _updateProxy(ProxyState proxyState) async {
+    if (!system.isDesktop) return;
+    
     final isStart = proxyState.isStart;
     final systemProxy = proxyState.systemProxy;
     final port = proxyState.port;

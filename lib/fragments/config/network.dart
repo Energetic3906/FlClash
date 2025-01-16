@@ -126,6 +126,7 @@ class SystemProxyItem extends StatelessWidget {
         return ListItem.switchItem(
           title: Text(appLocalizations.systemProxy),
           subtitle: Text(appLocalizations.systemProxyDesc),
+          enabled: config.canUseSystemProxy,
           delegate: SwitchDelegate(
             value: systemProxy,
             onChanged: (bool value) async {
