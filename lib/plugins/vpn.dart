@@ -38,7 +38,7 @@ class Vpn {
   }
 
   Future<bool?> startVpn() async {
-    final options = clashLib?.getAndroidVpnOptions();
+    final options = await clashLib?.getAndroidVpnOptions();
     return await methodChannel.invokeMethod<bool>("start", {
       'data': json.encode(options),
     });
@@ -73,8 +73,6 @@ class Vpn {
       fd,
     );
   }
-
-
 }
 
 final vpn = Platform.isAndroid ? Vpn() : null;

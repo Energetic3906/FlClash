@@ -94,7 +94,7 @@ class ClashLib extends ClashHandlerInterface with AndroidClashInterface {
   Future<bool> setFdMap(int fd) {
     return invoke<bool>(
       method: ActionMethod.setFdMap,
-      data: fd,
+      data: json.encode(fd),
     );
   }
 
@@ -118,7 +118,7 @@ class ClashLib extends ClashHandlerInterface with AndroidClashInterface {
   Future<DateTime?> startTun(int fd) async {
     final res = await invoke<String>(
       method: ActionMethod.startTun,
-      data: fd,
+      data: json.encode(fd),
     );
 
     if (res.isEmpty) {
@@ -201,7 +201,6 @@ class ClashLibHandler {
         receiver.close();
       }
     });
-
     final actionParamsChar = actionParams.toNativeUtf8().cast<Char>();
     clashFFI.invokeAction(
       actionParamsChar,

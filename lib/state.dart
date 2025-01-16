@@ -120,7 +120,6 @@ class GlobalState {
     await vpn?.startVpn();
     startListenUpdate();
     startTime ??= DateTime.now();
-    startListenUpdate();
   }
 
   restartCore({

@@ -69,9 +69,11 @@ func (cm *FdMap) Load(key int64) bool {
 	return ok
 }
 
-func handleStartTun(fd int) string {
+func handleStartTun(value string) string {
 	tunLock.Lock()
 	defer tunLock.Unlock()
+	var fd int
+	_ = json.Unmarshal([]byte(value), &fd)
 	if fd == 0 {
 		now := time.Now()
 		runTime = &now
@@ -104,7 +106,9 @@ func handleGetRunTime() string {
 	return strconv.FormatInt(runTime.UnixMilli(), 10)
 }
 
-func handleSetFdMap(fd int64) {
+func handleSetFdMap(value string) {
+	var fd int64
+	_ = json.Unmarshal([]byte(value), &fd)
 	go func() {
 		fdMap.Store(fd)
 	}()
@@ -132,7 +136,7 @@ func initSocketHook() {
 		}
 		return conn.Control(func(fd uintptr) {
 			fdInt := int64(fd)
-			timeout := time.After(500 * time.Millisecond)
+			timeout := time.After(200 * time.Millisecond)
 			id := atomic.AddInt64(&fdCounter, 1)
 
 			handleMarkSocket(Fd{
@@ -149,7 +153,7 @@ func initSocketHook() {
 					if exists {
 						return
 					}
-					time.Sleep(20 * time.Millisecond)
+					time.Sleep(10 * time.Millisecond)
 				}
 			}
 		})
@@ -237,7 +241,7 @@ func handleGetCurrentProfileName() string {
 func nextHandle(action *Action, send func([]byte)) bool {
 	switch action.Method {
 	case startTunMethod:
-		data := action.Data.(int)
+		data := action.Data.(string)
 		send(action.wrapMessage(handleStartTun(data)))
 		return true
 	case stopTunMethod:
@@ -258,7 +262,7 @@ func nextHandle(action *Action, send func([]byte)) bool {
 		send(action.wrapMessage(true))
 		return true
 	case setFdMapMethod:
-		data := action.Data.(int64)
+		data := action.Data.(string)
 		handleSetFdMap(data)
 		send(action.wrapMessage(true))
 		return true

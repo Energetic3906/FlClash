@@ -111,7 +111,6 @@ Future<void> clashLibService() async {
 
 _initClashHandler() {
   final sendPort = IsolateNameServer.lookupPortByName(mainIsolate);
-  debugPrint("_initClashHandler ===> ${sendPort.hashCode}");
   if (sendPort == null) {
     return;
   }
