@@ -126,16 +126,15 @@ class SystemProxyItem extends StatelessWidget {
         return ListItem.switchItem(
           title: Text(appLocalizations.systemProxy),
           subtitle: Text(appLocalizations.systemProxyDesc),
-          enabled: config.canUseSystemProxy,
           delegate: SwitchDelegate(
             value: systemProxy,
-            onChanged: (bool value) async {
+            onChanged: config.canUseSystemProxy ? (bool value) async {
               final config = globalState.appController.config;
               final networkProps = config.networkProps;
               config.networkProps = networkProps.copyWith(
                 systemProxy: value,
               );
-            },
+            } : null,
           ),
         );
       },
