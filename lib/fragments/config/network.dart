@@ -123,13 +123,13 @@ class SystemProxyItem extends StatelessWidget {
     return Selector<Config, bool>(
       selector: (_, config) => config.networkProps.systemProxy,
       builder: (_, systemProxy, __) {
-        final config = globalState.appController.config;
         return ListItem.switchItem(
           title: Text(appLocalizations.systemProxy),
           subtitle: Text(appLocalizations.systemProxyDesc),
           delegate: SwitchDelegate(
             value: systemProxy,
-            onChanged: config.canUseSystemProxy ? (bool value) async {
+            onChanged: system.isDesktop ? (bool value) async {
+              final config = globalState.appController.config;
               final networkProps = config.networkProps;
               config.networkProps = networkProps.copyWith(
                 systemProxy: value,

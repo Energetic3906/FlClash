@@ -116,18 +116,8 @@ class Build {
         ),
         BuildItem(
           target: Target.android,
-          arch: Arch.arm,
-          archName: 'armeabi-v7a',
-        ),
-        BuildItem(
-          target: Target.android,
           arch: Arch.arm64,
           archName: 'arm64-v8a',
-        ),
-        BuildItem(
-          target: Target.android,
-          arch: Arch.amd64,
-          archName: 'x86_64',
         ),
       ];
 
@@ -154,10 +144,7 @@ class Build {
           Directory(join(ndk!, "toolchains", "llvm", "prebuilt"));
       final prebuiltDirList = prebuiltDir.listSync();
       final map = {
-        "armeabi-v7a": "armv7a-linux-androideabi21-clang",
         "arm64-v8a": "aarch64-linux-android21-clang",
-        "x86": "i686-linux-android21-clang",
-        "x86_64": "x86_64-linux-android21-clang"
       };
       return join(
         prebuiltDirList.first.path,
@@ -501,9 +488,7 @@ class BuildCommand extends Command {
         return;
       case Target.android:
         final targetMap = {
-          Arch.arm: "android-arm",
           Arch.arm64: "android-arm64",
-          Arch.amd64: "android-x64",
         };
         final defaultArches = [Arch.arm, Arch.arm64, Arch.amd64];
         final defaultTargets = defaultArches
