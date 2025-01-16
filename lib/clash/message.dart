@@ -7,12 +7,14 @@ import 'package:fl_clash/models/models.dart';
 import 'package:flutter/foundation.dart';
 
 class ClashMessage {
-  final controller = StreamController();
+  final controller = StreamController<String>();
 
   ClashMessage._() {
     controller.stream.listen(
       (message) {
-        print(message);
+        if(message.isEmpty){
+          return;
+        }
         final m = AppMessage.fromJson(json.decode(message));
         for (final AppMessageListener listener in _listeners) {
           switch (m.type) {

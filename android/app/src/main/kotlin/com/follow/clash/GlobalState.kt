@@ -89,10 +89,9 @@ object GlobalState {
             serviceEngine?.plugins?.add(VpnPlugin())
             serviceEngine?.plugins?.add(AppPlugin())
             serviceEngine?.plugins?.add(TilePlugin())
-            serviceEngine?.plugins?.add(ServicePlugin())
             val vpnService = DartExecutor.DartEntrypoint(
                 FlutterInjector.instance().flutterLoader().findAppBundlePath(),
-                "vpnService"
+                "clashLibService"
             )
             serviceEngine?.dartExecutor?.executeDartEntrypoint(
                 vpnService,

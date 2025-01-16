@@ -135,7 +135,6 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
         ShortcutManagerCompat.setDynamicShortcuts(context, listOf(shortcut))
     }
 
-
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         channel.setMethodCallHandler(null)
         scope.cancel()
@@ -373,7 +372,7 @@ class AppPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware 
                     PackageManager.PackageInfoFlags.of(packageManagerFlags.toLong())
                 )
             } else {
-                @Suppress("DEPRECATION") packageManager.getPackageInfo(
+                packageManager.getPackageInfo(
                     packageName, packageManagerFlags
                 )
             }

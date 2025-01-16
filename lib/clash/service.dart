@@ -22,11 +22,11 @@ class ClashService extends ClashHandlerInterface {
   }
 
   ClashService._internal() {
-    _createServer();
+    _initServer();
     reStart();
   }
 
-  _createServer() async {
+  _initServer() async {
     final address = !Platform.isWindows
         ? InternetAddress(
             unixSocketPath,
@@ -97,6 +97,7 @@ class ClashService extends ClashHandlerInterface {
     final server = await serverCompleter.future;
     await server.close();
     await _deleteSocketFile();
+    return true;
   }
 
   @override

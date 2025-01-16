@@ -75,10 +75,6 @@ func handleStartTun(fd int) string {
 	if fd == 0 {
 		now := time.Now()
 		runTime = &now
-		SendMessage(Message{
-			Type: StartedMessage,
-			Data: strconv.FormatInt(runTime.UnixMilli(), 10),
-		})
 	} else {
 		initSocketHook()
 		tunListener, _ = t.Start(fd, currentConfig.General.Tun.Device, currentConfig.General.Tun.Stack)

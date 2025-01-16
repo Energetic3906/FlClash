@@ -1,10 +1,12 @@
 package main
 
 func SendMessage(message Message) {
-	res, _ := ActionResult{
-		Method: messageMethod,
-		Data:   message,
-	}.Json()
+	res, err := message.Json()
+	if err != nil {
+		return
+	}
 
-	send(res)
+	send(Action{
+		Method: messageMethod,
+	}.wrapMessage(res))
 }

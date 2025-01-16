@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:animations/animations.dart';
 import 'package:fl_clash/clash/clash.dart';
 import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/plugins/service.dart';
 import 'package:fl_clash/plugins/vpn.dart';
 import 'package:fl_clash/widgets/scaffold.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +17,6 @@ import 'models/models.dart';
 class GlobalState {
   Timer? timer;
   Timer? groupsUpdateTimer;
-  var isVpnService = false;
   late PackageInfo packageInfo;
   Function? updateCurrentDelayDebounce;
   PageController? pageController;
@@ -179,7 +177,6 @@ class GlobalState {
     required ClashConfig clashConfig,
   }) async {
     appState.isInit = await clashCore.isInit;
-    print(appState.isInit);
     if (!appState.isInit) {
       appState.isInit = await clashCore.init(
         config: config,
@@ -284,17 +281,13 @@ class GlobalState {
   }) async {
     final onlyProxy = config.appSetting.onlyProxy;
     final traffic = await clashCore.getTraffic(onlyProxy);
-    if (Platform.isAndroid && isVpnService == true) {
-      vpn?.startForeground(
-        title: await clashLib?.getCurrentProfileName() ?? "",
-        content: "$traffic",
-      );
-    } else {
-      if (appFlowingState != null) {
-        appFlowingState.addTraffic(traffic);
-        appFlowingState.totalTraffic =
-            await clashCore.getTotalTraffic(onlyProxy);
-      }
+    vpn?.startForeground(
+      title: await clashLib?.getCurrentProfileName() ?? "",
+      content: "$traffic",
+    );
+    if (appFlowingState != null) {
+      appFlowingState.addTraffic(traffic);
+      appFlowingState.totalTraffic = await clashCore.getTotalTraffic(onlyProxy);
     }
   }
 

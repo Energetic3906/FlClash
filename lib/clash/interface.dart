@@ -143,7 +143,7 @@ abstract class ClashHandlerInterface with ClashInterface {
 
   reStart();
 
-  destroy();
+  FutureOr<bool> destroy();
 
   Future<T> invoke<T>({
     required ActionMethod method,

@@ -106,7 +106,6 @@ class _ClashContainerState extends State<ClashManager> with AppMessageListener {
       DebounceTag.updateDelay,
       () async {
         await appController.updateGroupsDebounce();
-        // await appController.addCheckIpNumDebounce();
       },
       duration: const Duration(milliseconds: 5000),
     );

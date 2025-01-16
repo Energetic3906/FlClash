@@ -13,7 +13,7 @@ import 'package:path/path.dart';
 
 class ClashCore {
   static ClashCore? _instance;
-  late ClashInterface clashInterface;
+  late ClashHandlerInterface clashInterface;
 
   ClashCore._internal() {
     if (Platform.isAndroid) {
@@ -244,6 +244,11 @@ class ClashCore {
 
   requestGc() {
     clashInterface.forceGc();
+  }
+
+  destroy() async {
+    print("destroy===>");
+    await clashInterface.destroy();
   }
 }
 

@@ -9,23 +9,24 @@ import 'package:ffi/ffi.dart';
 import 'package:fl_clash/common/constant.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
-import 'package:fl_clash/state.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:fl_clash/plugins/service.dart';
 
 import 'generated/clash_ffi.dart';
 import 'interface.dart';
 
 class ClashLib extends ClashHandlerInterface with AndroidClashInterface {
   static ClashLib? _instance;
-  Isolate? _isolate;
   SendPort? sendPort;
   final receiverPort = ReceivePort();
 
   ClashLib._internal() {
-    _initClashLibHandler();
+    _initService();
   }
 
-  _initClashLibHandler() async {
+  _initService() async {
+    await service?.destroy();
+    IsolateNameServer.removePortNameMapping(mainIsolate);
+    IsolateNameServer.registerPortWithName(receiverPort.sendPort, mainIsolate);
     receiverPort.listen((message) {
       if (message is SendPort) {
         sendPort = message;
@@ -37,32 +38,7 @@ class ClashLib extends ClashHandlerInterface with AndroidClashInterface {
         );
       }
     });
-
-    _isolate = await Isolate.spawn((sendPort) {
-      final clashLibHandler = ClashLibHandler();
-      final innerReceiverPort = ReceivePort();
-      innerReceiverPort.listen((message) async {
-        final res = await clashLibHandler.invokeAction(message);
-        final action = ActionResult.fromJson(json.decode(res));
-        sendPort.send(json.encode(action));
-      });
-      if (!globalState.isVpnService) {
-        final messageReceiverPort = ReceivePort();
-        clashLibHandler.initMessage(messageReceiverPort);
-        messageReceiverPort.listen((message) {
-          sendPort.send(
-            json.encode(
-              ActionResult(
-                method: ActionMethod.message,
-                data: message,
-                id: '',
-              ),
-            ),
-          );
-        });
-      }
-      sendPort.send(innerReceiverPort.sendPort);
-    }, receiverPort.sendPort);
+    await service?.init();
   }
 
   factory ClashLib() {
@@ -92,14 +68,14 @@ class ClashLib extends ClashHandlerInterface with AndroidClashInterface {
   }
 
   @override
-  destroy() {
-    _isolate?.kill();
+  destroy() async {
+    await service?.destroy();
+    return true;
   }
 
   @override
   reStart() {
-    _isolate?.kill();
-    _initClashLibHandler();
+    _initService();
   }
 
   @override

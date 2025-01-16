@@ -9,6 +9,7 @@ class TilePlugin(private val onStart: (() -> Unit)? = null, private val onStop: 
     MethodChannel.MethodCallHandler {
 
     private lateinit var channel: MethodChannel
+
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "tile")
         channel.setMethodCallHandler(this)
