@@ -56,6 +56,9 @@ jobs:
       - name: Setup
         run: dart setup.dart android
 
+      - name: Build APK
+        run: flutter build apk --target-platform android-arm64 --split-per-abi --dart-define FLUTTER_BUILD_NAME=0.8.72 --dart-define FLUTTER_BUILD_NUMBER=202501101
+
       - name: Generate release notes
         run: |
           echo "## What's Changed" > release.md
@@ -64,6 +67,6 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
-          files: ./dist/*
+          files: build/app/outputs/flutter-apk/*.apk
           body_path: './release.md'
 
