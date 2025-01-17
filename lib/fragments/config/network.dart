@@ -128,13 +128,13 @@ class SystemProxyItem extends StatelessWidget {
           subtitle: Text(appLocalizations.systemProxyDesc),
           delegate: SwitchDelegate(
             value: systemProxy,
-            onChanged: system.isDesktop ? (bool value) async {
+            onChanged: (bool value) async {
               final config = globalState.appController.config;
               final networkProps = config.networkProps;
               config.networkProps = networkProps.copyWith(
                 systemProxy: value,
               );
-            } : null,
+            },
           ),
         );
       },
