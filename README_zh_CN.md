@@ -50,11 +50,11 @@ on Mobile:
 支持下列操作
 
    ```bash
-    com.follow.clash.action.START
+    com.follow.clash.ene.action.START
     
-    com.follow.clash.action.STOP
+    com.follow.clash.ene.action.STOP
     
-    com.follow.clash.action.CHANGE
+    com.follow.clash.ene.action.CHANGE
    ```
 
 ## Download

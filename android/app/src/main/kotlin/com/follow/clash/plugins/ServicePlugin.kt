@@ -1,8 +1,8 @@
-package com.follow.clash.plugins
+package com.follow.clash.ene.plugins
 
-import com.follow.clash.FlClashApplication
-import com.follow.clash.GlobalState
-import com.follow.clash.models.VpnOptions
+import com.follow.clash.ene.FlClashApplication
+import com.follow.clash.ene.GlobalState
+import com.follow.clash.ene.models.VpnOptions
 import com.google.gson.Gson
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall

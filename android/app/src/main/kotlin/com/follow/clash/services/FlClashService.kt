@@ -1,4 +1,4 @@
-package com.follow.clash.services
+package com.follow.clash.ene.services
 
 import android.annotation.SuppressLint
 import android.app.Notification.FOREGROUND_SERVICE_IMMEDIATE
@@ -12,10 +12,10 @@ import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
-import com.follow.clash.GlobalState
-import com.follow.clash.MainActivity
-import com.follow.clash.extensions.getActionPendingIntent
-import com.follow.clash.models.VpnOptions
+import com.follow.clash.ene.GlobalState
+import com.follow.clash.ene.MainActivity
+import com.follow.clash.ene.extensions.getActionPendingIntent
+import com.follow.clash.ene.models.VpnOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -67,7 +67,7 @@ class FlClashService : Service(), BaseServiceInterface {
             }
 
             with(NotificationCompat.Builder(this@FlClashService, CHANNEL)) {
-                setSmallIcon(com.follow.clash.R.drawable.ic_stat_name)
+                setSmallIcon(com.follow.clash.ene.R.drawable.ic_stat_name)
                 setContentTitle("FlClash")
                 setContentIntent(pendingIntent)
                 setCategory(NotificationCompat.CATEGORY_SERVICE)

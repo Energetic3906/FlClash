@@ -1,4 +1,4 @@
-package com.follow.clash.plugins
+package com.follow.clash.ene.plugins
 
 import android.content.ComponentName
 import android.content.Context
@@ -11,18 +11,18 @@ import android.net.NetworkRequest
 import android.os.Build
 import android.os.IBinder
 import androidx.core.content.getSystemService
-import com.follow.clash.FlClashApplication
-import com.follow.clash.GlobalState
-import com.follow.clash.RunState
-import com.follow.clash.extensions.awaitResult
-import com.follow.clash.extensions.getProtocol
-import com.follow.clash.extensions.resolveDns
-import com.follow.clash.models.Process
-import com.follow.clash.models.StartForegroundParams
-import com.follow.clash.models.VpnOptions
-import com.follow.clash.services.BaseServiceInterface
-import com.follow.clash.services.FlClashService
-import com.follow.clash.services.FlClashVpnService
+import com.follow.clash.ene.FlClashApplication
+import com.follow.clash.ene.GlobalState
+import com.follow.clash.ene.RunState
+import com.follow.clash.ene.extensions.awaitResult
+import com.follow.clash.ene.extensions.getProtocol
+import com.follow.clash.ene.extensions.resolveDns
+import com.follow.clash.ene.models.Process
+import com.follow.clash.ene.models.StartForegroundParams
+import com.follow.clash.ene.models.VpnOptions
+import com.follow.clash.ene.services.BaseServiceInterface
+import com.follow.clash.ene.services.FlClashService
+import com.follow.clash.ene.services.FlClashVpnService
 import com.google.gson.Gson
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall

@@ -1,6 +1,6 @@
-package com.follow.clash.services
+package com.follow.clash.ene.services
 
-import com.follow.clash.models.VpnOptions
+import com.follow.clash.ene.models.VpnOptions
 
 interface BaseServiceInterface {
 

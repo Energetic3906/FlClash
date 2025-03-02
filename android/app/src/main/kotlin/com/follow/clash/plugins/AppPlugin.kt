@@ -1,4 +1,4 @@
-package com.follow.clash.plugins
+package com.follow.clash.ene.plugins
 
 import android.Manifest
 import android.app.Activity
@@ -18,13 +18,13 @@ import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
 import com.android.tools.smali.dexlib2.dexbacked.DexBackedDexFile
-import com.follow.clash.FlClashApplication
-import com.follow.clash.GlobalState
-import com.follow.clash.R
-import com.follow.clash.extensions.awaitResult
-import com.follow.clash.extensions.getActionIntent
-import com.follow.clash.extensions.getBase64
-import com.follow.clash.models.Package
+import com.follow.clash.ene.FlClashApplication
+import com.follow.clash.ene.GlobalState
+import com.follow.clash.ene.R
+import com.follow.clash.ene.extensions.awaitResult
+import com.follow.clash.ene.extensions.getActionIntent
+import com.follow.clash.ene.extensions.getBase64
+import com.follow.clash.ene.models.Package
 import com.google.gson.Gson
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.plugins.FlutterPlugin
